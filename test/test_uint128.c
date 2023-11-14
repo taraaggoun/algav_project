@@ -8,6 +8,10 @@
 #include <string.h>
 #include <unistd.h>
 
+/* -------------------------------- DEFINE --------------------------------- */
+
+
+
 /* ---------------------------- GLOBAL VARIABLE ----------------------------- */
 
 char pathname[2048] = { 0 };
@@ -91,6 +95,10 @@ int main(int argc, char *argv[]) {
 	argument_manager(argc, argv);
 
 	FILE *file = fopen(pathname, "r");
+	if (file == NULL) {
+		dprintf(STDERR_FILENO, "Erreur fopen\n");
+		exit(EXIT_FAILURE);
+	}
 	printf("-- Comparaison des valeurs du fichier %s --\n\n", pathname);
 
 	uint128_t cle1 = { 0 };
