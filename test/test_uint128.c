@@ -108,7 +108,7 @@ static int read_uint128(FILE *file, uint128_t *cle, char *buf) {
 	return 1;
 }
 
-/* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
+/* ---------------------------------- MAIN ---------------------------------- */
 
 int main(int argc, char *argv[]) {
 	argument_manager(argc, argv);
@@ -128,11 +128,12 @@ int main(int argc, char *argv[]) {
 	while(read_uint128(file, &cle1, cle1_str)) {
 		if (read_uint128(file, &cle2, cle2_str) == 0)
 			break;
-			
+
+		// Test si la comparaison en comparant les chaine de carateres
 		affiche_comparaison(cle1, cle2, strcmp(cle1_str, cle2_str));
 	}
 
-	printf("\n-- Fin comparaison des valeurs du fichier %s --\n", pathname);
+	printf("\n-- Fin comparaison des valeurs du fichier %s --\n\n", pathname);
 	fclose(file);
 
 	return 0;

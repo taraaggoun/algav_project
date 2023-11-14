@@ -1,13 +1,14 @@
 CC 			:= gcc
-INCL 		:= -Iinclude
 CCFLAGS 	:= -Wall -c
-CCO 		:= $(CC) $(CCFLAGS) $(INCL) -c -o
-OBJECTS		:= obj/test_uint128.o obj/uint128.o obj/arbre_binaire.o
+INCL 		:= -Iinclude
+CCO 		:= $(CC) $(CCFLAGS) $(INCL) -o
 
 OBJ		 	:= obj
 BIN 		:= bin
 
-TARGETS		:= test_uint128
+TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_bt
+
+#--------------------------------------#
 
 all: directory $(TARGETS)
 
@@ -15,17 +16,29 @@ directory:
 	mkdir -p $(OBJ)
 	mkdir -p $(BIN)
 
-$(BIN)/test_uint128: $(OBJECTS)
-	$(CC) -o test_uint128 $(OBJECTS)
-	
-obj/test_uint128.o: test/test_uint128.c
+#--------------------------------------#
+
+$(BIN)/test_uint128: $(OBJ)/test_uint128.o $(OBJ)/uint128.o
+	$(CC) -o $@ $^
+
+$(BIN)/test_bt: $(OBJ)/test_bt.o $(OBJ)/binary_tree.o $(OBJ)/uint128.o
+	$(CC) -o $@ $^
+
+#--------------------------------------#
+
+$(OBJ)/test_uint128.o: test/test_uint128.c
 	$(CCO) $@ $<
 
-obj/uint128.o: src/uint128.c
+$(OBJ)/test_bt.o: test/test_bt.c
 	$(CCO) $@ $<
 
-obj/arbre_binaire.o: src/arbre_binaire.c
+$(OBJ)/uint128.o: src/uint128.c
 	$(CCO) $@ $<
+
+$(OBJ)/binary_tree.o: src/binary_tree.c
+	$(CCO) $@ $<
+
+#--------------------------------------#
 
 clean:
 	rm -rf $(OBJ) $(BIN)

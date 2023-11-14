@@ -13,7 +13,6 @@
 // nombre de chiffres dans le nombre + 2 (0x) + 1 (\0)
 #define UINT64_BUF_LEN_B16 UINT64_STR_LEN_B16 + 2 + 1
 
-
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
 /** Renvoie 
@@ -23,8 +22,10 @@
  **/
 
 static int compare_uint64(uint64_t cle1, uint64_t cle2) {
-	if (cle1 > cle2) return  1;
-	if (cle1 < cle2) return -1;
+	if (cle1 > cle2)
+		return  1;
+	if (cle1 < cle2)
+		return -1;
 	return 0;
 }
 
@@ -33,7 +34,7 @@ static int compare_uint64(uint64_t cle1, uint64_t cle2) {
  * 0  si cle1 = cle2
  * -1 si cle1 < cle2
  **/
-static int compare(uint128_t cle1, uint128_t cle2) 
+static int compare(uint128_t cle1, uint128_t cle2) {
 	int res = compare_uint64(cle1.i1, cle2.i1);
 	if (res != 0)
 		return res;
