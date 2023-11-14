@@ -9,9 +9,9 @@
 
 /* -------------------------------- DEFINES --------------------------------- */
 
-#define UINT32_STR_LEN 8
+#define UINT64_STR_LEN_B16 16
 // nombre de chiffres dans le nombre + 2 (0x) + 1 (\0)
-#define UINT32_BUF_LEN UINT32_STR_LEN + 2 + 1
+#define UINT64_BUF_LEN_B16 UINT64_STR_LEN_B16 + 2 + 1
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
@@ -20,7 +20,7 @@
  * 0  si cle1 = cle2
  * -1 si cle1 < cle2
  **/
-int compare_uint32(uint32_t cle1, uint32_t cle2) {
+static int compare_uint64(uint64_t cle1, uint64_t cle2) {
 	if (cle1 > cle2) return  1;
 	if (cle1 < cle2) return -1;
 	return 0;
@@ -31,20 +31,12 @@ int compare_uint32(uint32_t cle1, uint32_t cle2) {
  * 0  si cle1 = cle2
  * -1 si cle1 < cle2
  **/
-int compare(uint128_t cle1, uint128_t cle2) {
-	int res = compare_uint32(cle1.i1, cle2.i1);
+static int compare(uint128_t cle1, uint128_t cle2) {
+	int res = compare_uint64(cle1.i1, cle2.i1);
 	if (res != 0)
 		return res;
 
-	res = compare_uint32(cle1.i2, cle2.i2);
-	if (res != 0)
-		return res;
-
-	res = compare_uint32(cle1.i3, cle2.i3);
-	if (res != 0)
-		return res;
-
-	res = compare_uint32(cle1.i4, cle2.i4);
+	res = compare_uint64(cle1.i2, cle2.i2);
 	if (res != 0)
 		return res;
 
@@ -52,9 +44,10 @@ int compare(uint128_t cle1, uint128_t cle2) {
 }
 
 // Convertie une chaine de caractere en uint32
-int str_to_uint32(char *str) {
-	char *endptr;
-	uint32_t res = strtol(str, &endptr, 16);
+static uint64_t str_to_uint64(char *str) {
+	char *endptr = NULL;
+	uint64_t res = strtoul(str, &endptr, 16);
+
 	if (!(strcmp(str, "\0") != 0 && strcmp(endptr, "\0") == 0)) {
 		dprintf(STDERR_FILENO, "Erreur invalide valeur\n");
 		exit(EXIT_FAILURE);
@@ -73,31 +66,21 @@ bool eg(uint128_t cle1, uint128_t cle2) {
 }
 
 void str_to_uint128(char *str, uint128_t *cle) {
-	int str_pos = strlen(str) - UINT32_STR_LEN;
-	char buf[UINT32_BUF_LEN] = { 0 };
-	// printf("\n%d\n", str_pos);
+	size_t len = strlen(str);
+	int pos = (len - UINT64_STR_LEN_B16 > 1) ? len - UINT64_STR_LEN_B16 : 2;
+	char buf[UINT64_BUF_LEN_B16] = { 0 };
 
-	snprintf(buf, UINT32_BUF_LEN, "0x%s", str + str_pos);
-	cle->i1 = str_to_uint32(buf);
-	str_pos -= (str_pos - UINT32_STR_LEN >= 2) ? UINT32_STR_LEN : 2;
-	// printf("\n%d\n", str_pos);
+	snprintf(buf, UINT64_BUF_LEN_B16, "0x%s", str + pos);
+	cle->i2 = str_to_uint64(buf);
+	pos = (pos - UINT64_STR_LEN_B16 > 1) ? pos - UINT64_STR_LEN_B16 : 2;
 
-	snprintf(buf, UINT32_BUF_LEN, "0x%8s", str + str_pos);
-	cle->i2 = str_to_uint32(buf);
-	str_pos -= (str_pos - UINT32_STR_LEN >= 2) ? UINT32_STR_LEN : 2;
-	// printf("\n%d\n", str_pos);
-
-	snprintf(buf, UINT32_BUF_LEN, "0x%8s", str + str_pos);
-	cle->i3 = str_to_uint32(buf);
-	str_pos -= (str_pos - UINT32_STR_LEN >= 2) ? UINT32_STR_LEN : 2;
-	// printf("\n%d\n", str_pos);
-
-	snprintf(buf, UINT32_BUF_LEN, "0x%8s", str + str_pos);
-	cle->i4 = str_to_uint32(buf);
+	memset(buf, 0, UINT64_BUF_LEN_B16);
+	snprintf(buf, UINT64_BUF_LEN_B16, "0x%s", str + pos);
+	cle->i1 = str_to_uint64(buf);
 }
 
-void uint128_to_str(uint128_t cle, char *str) {
-	sprintf(str, "%u.%u.%u.%u", cle.i1, cle.i2, cle.i3, cle.i4);
+void uint128_to_str(uint128_t cle, char *str, size_t maxlen) {
+	snprintf(str, maxlen, "%lu.%lu", cle.i1, cle.i2);
 }
 
 /* -------------------------------------------------------------------------- */
