@@ -26,12 +26,12 @@ binary_tree* ArbreVide(void);
 /** Renvoie l'abre binaire qui a pour fils gauche l fils droit r et 
  *  en valeur de  racine v
  */
-binary_tree* ArbreBinaire(const tree_value *v, binary_tree *l, binary_tree *r);
+binary_tree* ArbreBinaire(const tree_value v, binary_tree *l, binary_tree *r);
 
 // Libere la memoire d'un arbre
 void free_binary_tree(binary_tree *bt);
 
 // Test si l'arbre est vide
-bool EstVide(binary_tree *bt);
+bool bt_EstVide(binary_tree *bt);
 
 /* -------------------------------------------------------------------------- */

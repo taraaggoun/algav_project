@@ -19,14 +19,14 @@ binary_tree* ArbreVide(void) {
 	return bt;
 }
 
-binary_tree* ArbreBinaire(const tree_value *v, binary_tree *l, binary_tree *r) {
+binary_tree* ArbreBinaire(const tree_value v, binary_tree *l, binary_tree *r) {
 	binary_tree *bt = ArbreVide();
-	bt->val = calloc(1, sizeof(*v));
+	bt->val = calloc(1, sizeof(v));
 	if (bt->val == NULL) {
 		dprintf(STDERR_FILENO, "Erreur malloc ArbreVide\n");
 		exit(EXIT_FAILURE);
 	}
-	memcpy(bt->val, v, sizeof(*v));
+	memcpy(bt->val, &v, sizeof(v));
 	bt->left = l;
 	bt->right = r;
 
@@ -50,7 +50,7 @@ void free_binary_tree(binary_tree *bt) {
 	free(bt);
 }
 
-bool EstVide(binary_tree *bt) {
+bool bt_EstVide(binary_tree *bt) {
 	return bt->val == NULL;
 }
 
