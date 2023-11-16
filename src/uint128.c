@@ -83,6 +83,7 @@ void str_to_uint128(char *str, uint128_t *cle) {
 }
 
 void uint128_to_str(uint128_t cle, char *str, size_t maxlen) {
+	memset(str, 0, maxlen);
 	snprintf(str, maxlen, "%lu.%lu", cle.i1, cle.i2);
 }
 
