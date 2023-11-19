@@ -7,14 +7,16 @@
 /* ---------------------------------- MAIN ---------------------------------- */
 
 int main(void) {
-	binary_tree *bt = ArbreVide();
-	printf("Arbre vide est vide ? %d\n", bt_EstVide(bt));
-	free_binary_tree(bt); // libere la memoire
+	printf("Creation de l'arbre vide \n");
+	binary_tree *bt = bt_empty();
+	printf("Arbre est vide ? %d\n", bt_is_empty(bt));
+	bt_free(bt); // libere la memoire
 
 	tree_value v = { 0 };
-	bt = ArbreBinaire(v, ArbreVide(), ArbreVide());
-	printf("Arbre vide est vide ? %d\n", bt_EstVide(bt));
-	free_binary_tree(bt); // libere la memoire
+	printf("Ajoue d'un element dans l'arbre\n");
+	bt = bt_new(v, uint128, bt_empty(), bt_empty());
+	printf("Arbre est vide ? %d\n", bt_is_empty(bt));
+	bt_free(bt); // libere la memoire
 
 	return 0;
 }

@@ -9,30 +9,44 @@
 typedef struct min_heap_tree {
 	binary_tree *root;
 	binary_tree *last_leave; // pointe vers la derniere feuille rempli
-	binary_tree *leave_empty; // pointe vers la premiere feuille vide
+	binary_tree *empty_leave; // pointe vers la premiere feuille vide
 } min_heap_tree;
 
 /* -------------------------------- FUNCTIONS ------------------------------- */
 
-// Renvoie le tas vide
-min_heap_tree* tree_heap_empty(void);
+/**
+ * Renvoie le tas vide
+**/
+min_heap_tree* mhtree_empty(void);
 
-// Libere la memoire d'un tas
-void free_min_heap_tree(min_heap_tree *h);
+/**
+ * Libere la memoire d'un tas
+**/
+void mhtree_free(min_heap_tree *h);
 
-// Test si le tas est vide
-bool mhtree_EstVide(min_heap_tree *h);
+/**
+ * Test si le tas est vide
+**/
+bool mhtree_is_empty(min_heap_tree *h);
 
-// Supprime le minimum du tas
+/**
+ * Supprime le minimum du tas
+**/
 tree_value SupprMin(min_heap_tree *h);
 
-// Ajoute v dans me tas
-void Ajout(tree_value v, min_heap_tree *h);
+/**
+ * Ajoute v de type t dans le tas h
+**/
+void Ajout(tree_value v, type t, min_heap_tree *h);
 
-// Ajoute au tas toutes les clé contenue dans v
-int AjoutsIteratifs(tree_value *v, size_t v_len, min_heap_tree *h);
+/**
+ * Ajoute au tas len clés contenue dans v de type t
+**/
+void AjoutsIteratifs(tree_value *v, type t, size_t len, min_heap_tree *h);
 
-// Construit un tas a partir des clé contenue dans v
+/**
+ * Construit un tas a partir des clé contenue dans v
+**/
 int Construction(tree_value *v, size_t v_len, min_heap_tree *h);
 
 /* -------------------------------------------------------------------------- */

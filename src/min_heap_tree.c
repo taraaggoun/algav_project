@@ -6,35 +6,24 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "../include/utils.h"
+
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
-// Supprime le noeud et met a jours les pointeurs
-static void mhtree_remove_node(min_heap_tree *h) {
-	free_min_heap_tree(h->last_leave);
-	h->last_leave = ArbreVide();
-	h->leave_empty = h->last_leave;
-	// Mettre a jours last_leave
-	// Si je suis le fils droit de mon pere
-	if(h->last_leave == h->last_leave->parent->right)
-		h->last_leave = h->last_leave->parent->left;
-	else  {// Si je suis le fils gauche,
-		binary_tree *tmp = NULL;
-		while()
-		// je deviens le fils droit du frere de mon pere
-		// h->last_leave = h->last_leave->parent->parent->right;
-	}
-}
-
-// Echange les valeurs de deux noeud
-static void rotation_node(binary_tree *bt1, binary_tree *bt2) {
+/**
+ * Echange les valeurs de deux noeud
+**/
+static void swap_node_value(binary_tree *bt1, binary_tree *bt2) {
 	tree_value tmp = *(bt1->val);
 	*(bt1->val) = *(bt2->val);
 	*(bt2->val) = tmp;
 }
 
-// Echange les noeud pour que l'arbre soit un tas, de la racine jusqu'au feuille
-static void rotation_rtol(binary_tree *bt) {
-	if (bt_EstVide(bt)) {
+/**
+ * Echange les noeud pour que l'arbre soit un tas, de la racine jusqu'au feuille
+**/
+static void swap_root_to_leave(binary_tree *bt) {
+	if (bt_is_empty(bt)) {
 		dprintf(STDERR_FILENO, "Erreur: L'arbre est vide dans rotation_rtol");
 		exit(EXIT_FAILURE);
 	}
@@ -44,105 +33,169 @@ static void rotation_rtol(binary_tree *bt) {
 
 	// Trouver qui est le min dans les deux fils
 	bool left_is_min;
-	if (bt_EstVide(bt->left)) left_is_min = false;
+	if (bt_is_empty(bt->left)) left_is_min = false;
 	else {
-		if (bt_EstVide(bt->right)) left_is_min = true;
-		else left_is_min = inf(bt->left->val->u128, bt->right->val->u128);
+		if (bt_is_empty(bt->right)) left_is_min = true;
+		else left_is_min = is_inf(*(bt->left->val), *(bt->right->val), bt->type);
 	}
 
 	bool root_is_min;
 	if (left_is_min) {
-		root_is_min = inf(bt->val->u128, bt->left->val->u128);
+		root_is_min = is_inf(*(bt->val), *(bt->left->val), bt->type);
 		if(!root_is_min) {
-			rotation_node(bt, bt->left);
-			rotation_rtol(bt->left);
+			swap_node_value(bt, bt->left);
+			swap_root_to_leave(bt->left);
 		}
 	}
 	else {
-		root_is_min = inf(bt->val->u128, bt->right->val->u128);
+		root_is_min = is_inf(*(bt->val), *(bt->right->val), bt->type);
 		if(!root_is_min) {
-			rotation_node(bt, bt->left);
-			rotation_rtol(bt->right);
+			swap_node_value(bt, bt->left);
+			swap_root_to_leave(bt->right);
 		}
 	}
 }
 
-// Echange les noeud pour que l'arbre soit un tas, des feuilles jusqu'a la racine
-static void rotation_ltor(binary_tree *bt) {
-	if (bt_EstVide(bt)) {
+/**
+ * Echange les noeud pour que l'arbre soit un tas, des feuilles jusqu'a la racine
+**/
+static void swap_leave_to_root(binary_tree *bt) {
+	if (bt_is_empty(bt)) {
 		dprintf(STDERR_FILENO, "Erreur: L'arbre est vide dans rotation_rtol");
 		exit(EXIT_FAILURE);
 	}
 
-	if(bt_EstVide(bt->parent)) // Si on est la racine
+	if(bt_is_empty(bt->parent)) // Si on est la racine
 		return;
 
 	bool parent_is_min;
-	parent_is_min = inf(bt->parent->val->u128, bt->val->u128);
+	parent_is_min = is_inf(*(bt->parent->val), *(bt->val), bt->type);
 	if(!parent_is_min) {
-		rotation_node(bt, bt->parent);
-		rotation_rtol(bt->parent);
+		swap_node_value(bt, bt->parent);
+		swap_leave_to_root(bt->parent);
+	}
+}
+
+/**
+ * Supprime le noeud et met a jours les pointeurs
+**/
+static void mhtree_remove_node(min_heap_tree *h) {
+	// Libere la memoire du noeud
+	bt_free(h->last_leave);
+	// Remplace par l'arbre vide
+	h->last_leave = bt_empty();
+	h->empty_leave = h->last_leave;
+	// MAJ pointeur, last_leave
+	// Si fils droit de son pere, devient le fils gauche
+	if(h->last_leave == h->last_leave->parent->right)
+		h->last_leave = h->last_leave->parent->left;
+	else  { // Si je suis le fils gauche,
+		binary_tree *cur = h->last_leave->parent;
+		// On remonte au premier pere qui n'est pas un fils gauche
+		while(cur == cur->parent->left)
+			cur = cur->parent;
+		// Si je ne suis pas a la racine
+		if (cur != h->root) {
+			// Je vais chercher dans le frere a gauche
+			cur = cur->parent->left;
+			// Si je suis vide, je deviens le prochain a inserer
+			if (bt_is_empty(cur))
+				h->last_leave = cur;
+			// Sinon je descend dans la feuille la plus a gauche
+			while (!bt_is_empty(cur->right))
+				cur = cur->right;
+		}
+		h->last_leave = cur;
 	}
 }
 
 /* ---------------------------- PUBLIC FUNCTIONS ---------------------------- */
 
-min_heap_tree* tree_heap_empty(void) {
+min_heap_tree* mhtree_empty(void) {
 	min_heap_tree *h = calloc(1, sizeof(min_heap_tree));
-	h->root = ArbreVide();
+	h->root = bt_empty();
 	h->last_leave = h->root;
-	h->leave_empty = h->root;
+	h->empty_leave = NULL;
 	return h;
 }
 
-void free_min_heap_tree(min_heap_tree *h) {
-	free_binary_tree(h->root);
+void mhtree_free(min_heap_tree *h) {
+	bt_free(h->root);
 	h->root = NULL;
 	h->last_leave = NULL;
-	h->leave_empty = NULL;
+	h->empty_leave = NULL;
 	free(h);
 }
 
-bool mhtree_EstVide(min_heap_tree *h) {
-	return EstVide(h->root);
+bool mhtree_is_empty(min_heap_tree *h) {
+	return bt_is_empty(h->root);
 }
 
 tree_value SupprMin(min_heap_tree *h) {
-	if (mhtree_EstVide(h)) {
-		dprintf(STDERR_FILENO, "Erreur: Pas de min a extraire dans SupprMin");
-		exit(EXIT_FAILURE);
-	}
-	
+	// if (mhtree_is_empty(h)) {
+	// 	dprintf(STDERR_FILENO, "Erreur: Arbre vide dans SupprMin");
+	// 	exit(EXIT_FAILURE);
+	// }
+
 	tree_value v = *(h->root->val);
 	if (h->root == h->last_leave) { // Si arbre a un element
-		free_min_heap_tree(h);
-		h = ArbreVide();
+		// mhtree_free(h);
+		h = mhtree_empty(); // h devient l'arbre vide
 		return v;
 	}
 
 	h->root->val = h->last_leave->val;
 	mhtree_remove_node(h);
-	rotation_rtol(h);
+	swap_root_to_leave(h->root);
 
 	return v;
 }
 
-void Ajout(tree_value v, min_heap_tree *h) {
-	h->leave_empty = ArbreBinaire(v, NULL, NULL);
-	rotation_ltor(h->leave_empty);
+void Ajout(tree_value v, type t, min_heap_tree *h) {
+	// Ajoute un nouveau noeud en feuille
+	binary_tree *parent = NULL;
+	if (h->empty_leave != NULL) {
+		parent = h->empty_leave->parent;
+		bt_free(h->empty_leave);
+	}
+	h->empty_leave = bt_new(v, t, NULL, NULL);
+	h->empty_leave->parent = parent;
+	h->last_leave = h->empty_leave;
 
-	// Mettre a jour leave_empty
-	// Si je suis le fils gauche de mon pere
-	if(h->leave_empty == h->leave_empty->parent->left)
-		h->leave_empty = h->leave_empty->parent->left;
-	else // Si je suis le fils droit,
-		// je deviens le fils gauche du frere de mon pere
-		// h->last_leave = h->last_leave->parent->parent->right;
+	if (mhtree_is_empty(h)) {
+		h->root = h->empty_leave;
+		h->empty_leave = h->root->left;
+		return;
+	}
+
+	swap_leave_to_root(h->last_leave);
+
+	// MAJ pointeur, empty_leave
+	// Si fils gauche de son pere, devient fils droit
+	if(h->empty_leave == h->empty_leave->parent->left)
+		h->empty_leave = h->empty_leave->parent->right;
+	else { // Si fils droit
+		binary_tree *cur = h->empty_leave->parent;
+		// Tant que je suis le fils droit de mon pere
+		while(cur == cur->parent->right)
+			cur = cur->parent;
+		// Si je ne suis pas a la racine
+		if (cur != h->root) {
+			cur = cur->parent->right;
+			// Si je suis vide, je deviens le prochain a inserer
+			if (bt_is_empty(cur))
+				h->empty_leave = cur;
+			// Sinon je descend dans la feuille la plus a droite
+			while (!bt_is_empty(cur->left))
+				cur = cur->left;
+		}
+		h->empty_leave = cur;
+	}
 }
 
-void AjoutsIteratifs(tree_value *v, size_t len, min_heap_tree *h) {
+void AjoutsIteratifs(tree_value *v, type t, size_t len, min_heap_tree *h) {
 	for (int i = 0; i < len; i++)
-		Ajout(v[i], h);
+		Ajout(v[i], t, h);
 }
 
 int Construction(tree_value *v, size_t len, min_heap_tree *h) {

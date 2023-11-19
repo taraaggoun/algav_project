@@ -18,16 +18,16 @@ directory:
 
 #--------------------------------------#
 
-$(BIN)/test_uint128: $(OBJ)/test_uint128.o $(OBJ)/uint128.o
+$(BIN)/test_uint128: $(OBJ)/test_uint128.o $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^
 
 $(BIN)/test_bt: $(OBJ)/test_bt.o $(OBJ)/binary_tree.o $(OBJ)/uint128.o
 	$(CC) -o $@ $^
 
-$(BIN)/test_mhtree: $(OBJ)/test_mhtree.o $(OBJ)/binary_tree.o $(OBJ)/uint128.o
+$(BIN)/test_mhtree: $(OBJ)/test_mhtree.o $(OBJ)/min_heap_tree.o $(OBJ)/binary_tree.o $(OBJ)/utils.o  $(OBJ)/uint128.o
 	$(CC) -o $@ $^
 
-$(BIN)/test_tprioritetab: $(OBJ)/test_tprioritetab.o $(OBJ)/tprioritetab.o $(OBJ)/uint128.o
+$(BIN)/test_tprioritetab: $(OBJ)/test_tprioritetab.o $(OBJ)/tprioritetab.o $(OBJ)/utils.o  $(OBJ)/uint128.o
 	$(CC) -o $@ $^
 
 #--------------------------------------#
@@ -44,6 +44,9 @@ $(OBJ)/test_mhtree.o: test/test_mhtree.c
 $(OBJ)/test_tprioritetab.o: test/test_tprioritetab.c
 	$(CCO) $@ $<
 
+$(OBJ)/test_utils.o: test/test_utils.c
+	$(CCO) $@ $<
+
 
 $(OBJ)/uint128.o: src/uint128.c
 	$(CCO) $@ $<
@@ -55,6 +58,9 @@ $(OBJ)/min_heap_tree.o: src/min_heap_tree.c
 	$(CCO) $@ $<
 
 $(OBJ)/tprioritetab.o: src/tprioritetab.c
+	$(CCO) $@ $<
+
+$(OBJ)/utils.o: src/utils.c
 	$(CCO) $@ $<
 
 #--------------------------------------#
