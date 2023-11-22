@@ -47,6 +47,6 @@ void AjoutsIteratifs(tree_value *v, type t, size_t len, min_heap_tree *h);
 /**
  * Construit un tas a partir des clé contenue dans v
 **/
-int Construction(tree_value *v, size_t v_len, min_heap_tree *h);
+min_heap_tree* Construction(tree_value *v, size_t len, type t);
 
 /* -------------------------------------------------------------------------- */

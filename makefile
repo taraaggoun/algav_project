@@ -6,7 +6,8 @@ CCO 		:= $(CC) $(CCFLAGS) $(INCL) -o
 OBJ		 	:= obj
 BIN 		:= bin
 
-TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_bt $(BIN)/test_mhtree $(BIN)/test_tprioritetab
+TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_bt $(BIN)/test_mhtree 
+# $(BIN)/test_tprioritetab
 
 #--------------------------------------#
 

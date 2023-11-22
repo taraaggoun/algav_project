@@ -121,10 +121,10 @@ min_heap_tree* mhtree_empty(void) {
 
 void mhtree_free(min_heap_tree *h) {
 	bt_free(h->root);
-	h->root = NULL;
+	h->root->val = NULL;
 	h->last_leave = NULL;
 	h->empty_leave = NULL;
-	free(h);
+	// free(h);
 }
 
 bool mhtree_is_empty(min_heap_tree *h) {
@@ -132,14 +132,14 @@ bool mhtree_is_empty(min_heap_tree *h) {
 }
 
 tree_value SupprMin(min_heap_tree *h) {
-	// if (mhtree_is_empty(h)) {
-	// 	dprintf(STDERR_FILENO, "Erreur: Arbre vide dans SupprMin");
-	// 	exit(EXIT_FAILURE);
-	// }
+	if (mhtree_is_empty(h)) {
+		dprintf(STDERR_FILENO, "Erreur: Arbre vide dans SupprMin");
+		exit(EXIT_FAILURE);
+	}
 
 	tree_value v = *(h->root->val);
 	if (h->root == h->last_leave) { // Si arbre a un element
-		// mhtree_free(h);
+		mhtree_free(h);
 		h = mhtree_empty(); // h devient l'arbre vide
 		return v;
 	}
@@ -163,6 +163,7 @@ void Ajout(tree_value v, type t, min_heap_tree *h) {
 	h->last_leave = h->empty_leave;
 
 	if (mhtree_is_empty(h)) {
+		free(h->root);
 		h->root = h->empty_leave;
 		h->empty_leave = h->root->left;
 		return;
@@ -198,8 +199,17 @@ void AjoutsIteratifs(tree_value *v, type t, size_t len, min_heap_tree *h) {
 		Ajout(v[i], t, h);
 }
 
-int Construction(tree_value *v, size_t len, min_heap_tree *h) {
-	return 0;
+min_heap_tree* Construction(tree_value *v, size_t len, type t) {
+	if (len == 0) {
+		return mhtree_empty();
+	}
+	min_heap_tree *res = mhtree_empty();
+	bt_free(res->root);
+	res ->root = bt_construction(v, len, t);
+
+	btp_to_mhtree(res->root);
+	// mettre a jours les pointeur;
+	return res;
 }
 
 /* -------------------------------------------------------------------------- */

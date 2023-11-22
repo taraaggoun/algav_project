@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #include "../include/tprioritetab.h"
-#include "../include/test_utils.h"
+#include "test_utils.h"
 
 /* -------------------------------- DEFINE --------------------------------- */
 
@@ -38,14 +38,14 @@ void print_tas(uint128_t *tas, int taille) {
 
 int main(int argc, char *argv[]) {
 	char pathname[PATHMAX] = { 0 };
-	argument_manager(argc, argv, pathname);
+	// argument_manager(argc, argv, pathname);
 
 	FILE *file = fopen(pathname, "r");
 	if (file == NULL) {
 		dprintf(STDERR_FILENO, "Erreur fopen\n");
 		exit(EXIT_FAILURE);
 	}
-	// printf("-- Création d'une liste de clés %s --\n\n", pathname);
+	printf("-- Création d'une liste de clés %s --\n\n", pathname);
 
 	int i = 0;
 

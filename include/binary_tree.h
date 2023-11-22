@@ -44,4 +44,14 @@ void bt_free(binary_tree *bt);
 **/
 bool bt_is_empty(binary_tree *bt);
 
+/**
+ * Construit un arbre binaire parfait
+**/
+binary_tree* bt_construction(tree_value *v, size_t len, type t);
+
+/**
+ * Convertie un arbre binaire parfait en tas
+**/
+void btp_to_mhtree(binary_tree *bt);
+
 /* -------------------------------------------------------------------------- */

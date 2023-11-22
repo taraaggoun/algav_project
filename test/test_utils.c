@@ -1,6 +1,6 @@
 /* -------------------------------- INCLUDES -------------------------------- */
 
-#include "../include/test_utils.h"
+#include "test_utils.h"
 
 #include <ctype.h>
 #include <string.h>
