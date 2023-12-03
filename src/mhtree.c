@@ -367,6 +367,7 @@ void mhtree_ajout_iteratifs(uint128_t *k, size_t len, mhtree **h) {
 		mhtree_ajout(k[i], h);
 }
 
+// TODO mettre a jours les pointeurs et decommenter le bloc
 mhtree* mhtree_construction(uint128_t *v, size_t len) {
 	if (len == 0)
 		return mhtree_empty();
