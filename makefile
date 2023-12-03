@@ -6,8 +6,7 @@ CCO 		:= $(CC) $(CCFLAGS) $(INCL) -o
 OBJ		 	:= obj
 BIN 		:= bin
 
-TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_mhtree 
-# $(BIN)/test_tprioritetab
+TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_mhtree $(BIN)/test_bst
 
 #--------------------------------------#
 
@@ -25,8 +24,8 @@ $(BIN)/test_uint128: $(OBJ)/test_uint128.o $(OBJ)/uint128.o $(OBJ)/test_utils.o
 $(BIN)/test_mhtree: $(OBJ)/test_mhtree.o $(OBJ)/mhtree.o  $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^
 
-# $(BIN)/test_tprioritetab: $(OBJ)/test_tprioritetab.o $(OBJ)/tprioritetab.o $(OBJ)/utils.o  $(OBJ)/uint128.o
-# 	$(CC) -o $@ $^
+$(BIN)/test_bst: $(OBJ)/test_bst.o $(OBJ)/binary_search_tree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o
+	$(CC) -o $@ $^
 
 #--------------------------------------#
 
@@ -36,10 +35,10 @@ $(OBJ)/test_uint128.o: test/test_uint128.c
 $(OBJ)/test_mhtree.o: test/test_mhtree.c
 	$(CCO) $@ $<
 
-# $(OBJ)/test_tprioritetab.o: test/test_tprioritetab.c
-# 	$(CCO) $@ $<
-
 $(OBJ)/test_utils.o: test/test_utils.c
+	$(CCO) $@ $<
+
+$(OBJ)/test_bst.o: test/test_bst.c
 	$(CCO) $@ $<
 
 
@@ -49,11 +48,8 @@ $(OBJ)/uint128.o: src/uint128.c
 $(OBJ)/mhtree.o: src/mhtree.c
 	$(CCO) $@ $<
 
-# $(OBJ)/tprioritetab.o: src/tprioritetab.c
-# 	$(CCO) $@ $<
-
-# $(OBJ)/utils.o: src/utils.c
-# 	$(CCO) $@ $<
+$(OBJ)/binary_search_tree.o: src/binary_search_tree.c
+	$(CCO) $@ $<
 
 #--------------------------------------#
 

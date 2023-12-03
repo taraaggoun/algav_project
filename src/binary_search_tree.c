@@ -29,8 +29,9 @@ static void print_head(int depth, int addr) {
 	printf ("     ");
 }
 
+#define BUF_UINT128_LEN_B10 38
 static void pretty_rec(bst *t, int depth, int addr) {
-    if (t == NULL) {
+    if (is_bst_empty(t)) {
 	print_head(depth, addr);
 	printf("|----N\n");
 	return;
@@ -38,7 +39,9 @@ static void pretty_rec(bst *t, int depth, int addr) {
     pretty_rec(t->right, depth + 1, 2 * addr + 1);
     print_head(depth, addr);
     char c = (depth == 0) ? '-' : '|';
-    printf("%c----%d\n", c, t->key);
+     char buf[BUF_UINT128_LEN_B10] = { 0 };
+    uint128_to_str(*(t->key), buf, BUF_UINT128_LEN_B10);
+    printf("%c----%s\n", c, buf);
     pretty_rec(t->left, depth + 1, 2 * addr);
 }
 
@@ -134,26 +137,29 @@ bst* supp_bst(bst *t, uint128_t k) {
 
 	if (inf(*(t->key), k) == true) // k > t->key
 		t->right = supp_bst(t->right, k);
-	// k == t->key
-	if (is_bst_leaf(t)) {
-		free_bst(t);
+	
+	bool egl = eg(*(t->key), k);
+	if (egl && is_bst_leaf(t)) {
+		free(t);
 		return NULL;
 	}
-	if (is_bst_empty(t->left)) {
+	if (egl && is_bst_empty(t->left)) {
 		bst *tmp = t->right;
-		free_bst(t);
+		free(t);
 		return tmp;
 	}
-	if (is_bst_empty(t->right)) {
+	if (egl && is_bst_empty(t->right)) {
 		bst *tmp = t->left;
-		free_bst(t);
+		free(t);
 		return tmp;
 	}
-	// Il existe un fils gauche et un fils droit
-	bst *tmp = max_bst(t->left);
-	*(t->key) = *(tmp->key);
-	*(tmp->key) = k;
-	t->left = supp_bst(t->left, k);
+	if (egl) {
+		bst *tmp = max_bst(t->left);
+		*(t->key) = *(tmp->key);
+		*(tmp->key) = k;
+		t->left = supp_bst(t->left, k);
+		return t;
+	}
 	return t;
 }
 
