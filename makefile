@@ -22,7 +22,7 @@ $(BIN)/test_uint128: $(OBJ)/test_uint128.o $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^
 
 $(BIN)/test_mhtree: $(OBJ)/test_mhtree.o $(OBJ)/mhtree.o  $(OBJ)/uint128.o $(OBJ)/test_utils.o
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -lm
 
 $(BIN)/test_bst: $(OBJ)/test_bst.o $(OBJ)/binary_search_tree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o 
 	$(CC) -o $@ $^

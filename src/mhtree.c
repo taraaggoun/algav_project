@@ -2,6 +2,7 @@
 
 #include "../include/mhtree.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -55,7 +56,7 @@ static void swap_root_to_leave(mhtree *h) {
 	else {
 		root_is_min = inf(*(h->key), *(h->right->key));
 		if(!root_is_min) {
-			swap_node_value(h, h->left);
+			swap_node_value(h, h->right);
 			swap_root_to_leave(h->right);
 		}
 	}
@@ -65,7 +66,7 @@ static void swap_root_to_leave(mhtree *h) {
  * Echange les noeuds pour que l'arbre soit un tas
  * des feuilles jusqu'a la racine
 **/
-static void swap_leave_to_root(mhtree *h, int *changes) {
+static void swap_leave_to_root(mhtree *h) {
 	if (mhtree_is_empty(h)) {
 		dprintf(STDERR_FILENO, "Erreur: Tas vide dans swap_rtol\n");
 		exit(EXIT_FAILURE);
@@ -78,10 +79,8 @@ static void swap_leave_to_root(mhtree *h, int *changes) {
 	parent_is_min = inf(*(h->parent->key), *(h->key));
 	if(!parent_is_min) {
 		swap_node_value(h, h->parent);
-		if (changes != NULL)
-			(*changes)++;
 	}
-	swap_leave_to_root(h->parent, changes);
+	swap_leave_to_root(h->parent);
 }
 
 /**
@@ -124,12 +123,12 @@ static void maj_ptr(mhtree_node *new_node) {
 
 	cur = new_node;
 	while(cur->parent != NULL) {
-		cur->parent->last_leave = new_node;
-		new_node->parent->empty_leave_parent = new_empty;
+		cur->parent->last_leaf = new_node;
+		new_node->parent->empty_leaf_parent = new_empty;
 		cur = cur->parent;
 	}
-	cur->empty_leave_parent = new_empty;
-	new_node->empty_leave_parent = new_empty;
+	cur->empty_leaf_parent = new_empty;
+	new_node->empty_leaf_parent = new_empty;
 }
 
 /**
@@ -154,8 +153,8 @@ static mhtree_node* create_min_heap_leave(uint128_t k, mhtree_node *parent) {
 	new_node->right = NULL;
 	new_node->left = NULL;
 	new_node->parent = parent;
-	new_node->last_leave = new_node;
-	new_node->empty_leave_parent = new_node;
+	new_node->last_leaf = new_node;
+	new_node->empty_leaf_parent = new_node;
 	maj_ptr(new_node);
 	return new_node;
 }
@@ -164,17 +163,17 @@ static mhtree_node* create_min_heap_leave(uint128_t k, mhtree_node *parent) {
  * Supprime le noeud et met a jours les pointeurs
 **/
 static void mhtree_remove_node(mhtree_node **h) {
-	(*h)->empty_leave_parent = (*h)->last_leave->parent;
+	(*h)->empty_leaf_parent = (*h)->last_leaf->parent;
 	// test si l'element a supprimé est l'enfant gauche
 	bool supp_is_left = false;
-	mhtree_node *supp = (*h)->last_leave;
-	// MAJ pointeur, last_leave
+	mhtree_node *supp = (*h)->last_leaf;
+	// MAJ pointeur, last_leaf
 	// Si fils droit de son pere, devient le fils gauche
-	if((*h)->last_leave == (*h)->last_leave->parent->right)
-		(*h)->last_leave = (*h)->last_leave->parent->left;
+	if((*h)->last_leaf == (*h)->last_leaf->parent->right)
+		(*h)->last_leaf = (*h)->last_leaf->parent->left;
 	else  { // Si je suis le fils gauche,
 		supp_is_left = true;
-		mhtree_node *cur = (*h)->last_leave->parent;
+		mhtree_node *cur = (*h)->last_leaf->parent;
 		// On remonte au premier pere qui n'est pas un fils gauche
 		while(cur->parent != NULL && cur == cur->parent->left)
 			cur = cur->parent;
@@ -184,12 +183,12 @@ static void mhtree_remove_node(mhtree_node **h) {
 			cur = cur->parent->left;
 			// Si je suis vide, je deviens le prochain a inserer
 			if (mhtree_is_empty(cur))
-				(*h)->last_leave = cur;
+				(*h)->last_leaf = cur;
 			// Sinon je descend dans la feuille la plus a gauche
 			while (!mhtree_is_empty(cur->right))
 				cur = cur->right;
 		}
-		(*h)->last_leave = cur;
+		(*h)->last_leaf = cur;
 	}
 	// Libere la memoire du noeud
 	mhtree_node *supp_parent = supp->parent;
@@ -222,6 +221,13 @@ static void mhtree_to_tab(mhtree *h, uint128_t *tab, int *id) {
     }
 }
 
+static int nb_node(size_t index, size_t len) {
+	if (index > len)
+		return 0;
+	return nb_node(2 * index + 1 ,len) + nb_node(2 * index + 2 ,len) + 1;
+}
+
+
 /**
  * Construit par recuturence un arbre binaire
 **/
@@ -232,14 +238,27 @@ static mhtree* mhtree_construction_rec(uint128_t *v, size_t index, size_t len) {
 	mhtree *new_node = create_min_heap_leave(v[index], NULL);
 	new_node->left = mhtree_construction_rec(v, 2 * index + 1 ,len);
 	new_node->right = mhtree_construction_rec(v, 2 * index + 2, len);
+	int nb_child_left = nb_node(2 * index + 1, len);
+	int nb_child_right = nb_node(2 * index + 2, len);
+	int prof_max_l = log2(nb_child_left);
+	int prof_max_r = log2(nb_child_right);
 
 	if (new_node->left != NULL) {
         	new_node->left->parent = new_node;
+		new_node->last_leaf = new_node->left->last_leaf;
+		new_node->empty_leaf_parent = new_node->left->empty_leaf_parent;
 	}
 
 	if (new_node->right != NULL) {
 		new_node->right->parent = new_node;
+		if (prof_max_l == prof_max_r)
+			new_node->last_leaf = new_node->right->last_leaf;
+		if (nb_child_left > nb_child_right)
+			new_node->empty_leaf_parent = 
+			new_node->right->empty_leaf_parent;
 	}
+	if (new_node->right == NULL)
+		new_node->empty_leaf_parent = new_node;
 
 	return new_node;
 }
@@ -247,15 +266,17 @@ static mhtree* mhtree_construction_rec(uint128_t *v, size_t index, size_t len) {
 /**
  * transforme un arbre binaire en tas
 **/
-void bt_to_heap(mhtree *h, int *changes) {
-	if (h->right == NULL && h->left == NULL) {
-		swap_leave_to_root(h, changes);
-	}
+void bt_to_heap(mhtree *h) {
+	if (mhtree_is_empty(h))
+		return;
+
 	if (h->right != NULL)
-		bt_to_heap(h->right, changes);
+		bt_to_heap(h->right);
 	if (h->left != NULL)
-		bt_to_heap(h->left, changes);
+		bt_to_heap(h->left);
+	swap_root_to_leave(h);
 }
+
 /**
  * Fonction d'affichage
 */
@@ -294,8 +315,8 @@ mhtree* mhtree_empty(void) {
 		dprintf(STDERR_FILENO, "Erreur: calloc creation noeud tas\n");
 		exit(EXIT_FAILURE);
 	}
-	new_heap->last_leave = new_heap;
-	new_heap->empty_leave_parent = new_heap;
+	new_heap->last_leaf = new_heap;
+	new_heap->empty_leaf_parent = new_heap;
 
 	return new_heap;
 }
@@ -346,7 +367,7 @@ uint128_t mhtree_suppr_min(mhtree **h) {
 		*h = mhtree_empty();
 		return k;
 	}
-	*((*h)->key) = *((*h)->last_leave->key);
+	*((*h)->key) = *((*h)->last_leaf->key);
 	mhtree_remove_node(h);
 	swap_root_to_leave(*h);
 	return k;
@@ -358,8 +379,8 @@ void mhtree_ajout(uint128_t k, mhtree **h) {
 		*h = create_min_heap_leave(k, NULL);
 		return;
 	}
-	mhtree *new_node = create_min_heap_leave(k, (*h)->empty_leave_parent);
-	swap_leave_to_root(new_node, NULL);
+	mhtree *new_node = create_min_heap_leave(k, (*h)->empty_leaf_parent);
+	swap_leave_to_root(new_node);
 }
 
 void mhtree_ajout_iteratifs(uint128_t *k, size_t len, mhtree **h) {
@@ -372,12 +393,7 @@ mhtree* mhtree_construction(uint128_t *v, size_t len) {
 		return mhtree_empty();
 
 	mhtree *res = mhtree_construction_rec(v, 0,  len - 1);
-
-	// int changes;
-	// do {
-	// 	changes = 0;
-	// 	bt_to_heap(res, &changes);
-	// } while (changes > 0);
+	bt_to_heap(res);
 	return res;
 }
 

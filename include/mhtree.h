@@ -12,7 +12,7 @@
  * un pointeur vers le fils droit: right
  * un pointeur vers le fils gauche: left
  * un pointeur vers le parent: parent
- * un pointeur vers la derniere feuille ajouter: last_leave
+ * un pointeur vers la derniere feuille ajouter: last_leaf
  * un pointeur vers le pere de l'endroit ou on doit ajouter le prochain element
 */
 typedef struct MinHeapTreeNode {
@@ -22,8 +22,8 @@ typedef struct MinHeapTreeNode {
 	struct MinHeapTreeNode *left;
 
 	struct MinHeapTreeNode *parent;
-	struct MinHeapTreeNode *last_leave;
-	struct MinHeapTreeNode *empty_leave_parent;
+	struct MinHeapTreeNode *last_leaf;
+	struct MinHeapTreeNode *empty_leaf_parent;
 } mhtree_node;
 
 typedef mhtree_node mhtree;
