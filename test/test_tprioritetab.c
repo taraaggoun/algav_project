@@ -74,6 +74,7 @@ int main(int argc, char *argv[]) {
 		i++;
 	}
 
+
 	printf("Liste clé 1 : ");
 	print_tas(listesCle_1, i);
 	printf("\n");

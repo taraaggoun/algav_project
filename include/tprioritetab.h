@@ -8,6 +8,8 @@
 
 bool estUnTas(uint128_t *tas,int len);
 
+
+
 // Supprime le plus petit element du tas
 void supprMin(uint128_t *tas);
 
