@@ -23,32 +23,32 @@ int main(int argc, char *argv[]) {
 
 	uint128_t cle = { 0 };
 	char cle_str[BUF_UINT128_LEN_B16] = { 0 };
-	bst *bst = create_bst_empty();
-	print_bst(bst);
+	bst *bst = bst_create_empty();
+	bst_print(bst);
 	printf("L'arbre est un abr ? %d\n", is_bst(bst));
 
 
 	size_t i = NB_UINT128;
 	printf("\nAjout de %ld valeur dans l'arbre\n", i);
 	while( i-- > 0 && read_uint128(file, &cle, cle_str)) {
-		bst = add_bst(cle, bst);
+		bst = bst_add(cle, bst);
 	}
 
-	print_bst(bst);
+	bst_print(bst);
 	printf("L'arbre est un abr ? %d\n", is_bst(bst));
 	
-	bool exist = search_bst(bst, cle) != NULL;
+	bool exist = bst_search(bst, cle) != NULL;
 	printf("Es ce que %s appartient a l'arbre? %d \n", cle_str, exist);
 
 	printf("\nSuppression de %s\n", cle_str);
-	bst = supp_bst(bst, cle);
-	print_bst(bst);
+	bst = bst_supp(bst, cle);
+	bst_print(bst);
 	printf("L'arbre est un abr ? %d\n", is_bst(bst));
 
-	exist = search_bst(bst, cle) != NULL;
+	exist = bst_search(bst, cle) != NULL;
 	printf("Es ce que %s appartient a l'arbre? %d \n", cle_str, exist);
 
-	free_bst(bst);
+	bst_free(bst);
 	fclose(file);
 
 	return 0;

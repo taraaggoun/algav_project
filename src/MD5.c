@@ -1,4 +1,3 @@
-
 /* -------------------------------- INCLUDES -------------------------------- */
 
 #include "../include/MD5.h"
@@ -10,12 +9,16 @@
 
 /* -------------------------------- DEFINES --------------------------------- */
 
+/**
+ * Fonction de rotation vers la gauche
+*/
 uint32_t leftrotate(uint32_t value, uint32_t shift) {
     return (value << shift) | (value >> (32 - shift));
 }
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
+// TODO little endian
 uint128_t* MD5(char *str) {
 	//Définir r comme suit :
 	uint32_t r[64] = {7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12,

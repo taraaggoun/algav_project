@@ -11,7 +11,7 @@
 
 /**
  * Echange les valeurs de deux noeud
-**/
+*/
 static void swap_node_value(mhtree_node *node1, mhtree_node *node2) {
 	uint128_t *temp = node1->key;
 	node1->key = node2->key;
@@ -20,14 +20,14 @@ static void swap_node_value(mhtree_node *node1, mhtree_node *node2) {
 
 /**
  * Renvoie si le tas est une feuille
-**/
+*/
 static bool is_leave(mhtree *h) {
 	return h->left == NULL && h->right == NULL;
 }
 
 /**
  * Echange les noeud pour que l'arbre soit un tas, de la racine jusqu'au feuille
-**/
+*/
 static void swap_root_to_leave(mhtree *h) {
 	if (mhtree_is_empty(h)) {
 		dprintf(STDERR_FILENO, "Erreur: Tas vide dans swap_rtol\n");
@@ -65,7 +65,7 @@ static void swap_root_to_leave(mhtree *h) {
 /**
  * Echange les noeuds pour que l'arbre soit un tas
  * des feuilles jusqu'a la racine
-**/
+*/
 static void swap_leave_to_root(mhtree *h) {
 	if (mhtree_is_empty(h)) {
 		dprintf(STDERR_FILENO, "Erreur: Tas vide dans swap_rtol\n");
@@ -85,7 +85,7 @@ static void swap_leave_to_root(mhtree *h) {
 
 /**
  * Mise a jour des pointeurs pour ajout d'un element
-**/
+*/
 static void maj_ptr(mhtree_node *new_node) {
 	if (new_node->parent == NULL) return;
 
@@ -137,7 +137,7 @@ static void maj_ptr(mhtree_node *new_node) {
  * de parent parent
  * de fils gauche l
  * de fils droit r
-**/
+*/
 static mhtree_node* create_min_heap_leave(uint128_t k, mhtree_node *parent) {
 	mhtree_node *new_node = (mhtree_node*) calloc(1, sizeof(mhtree_node));
 	if (new_node == NULL) {
@@ -161,7 +161,7 @@ static mhtree_node* create_min_heap_leave(uint128_t k, mhtree_node *parent) {
 
 /**
  * Supprime le noeud et met a jours les pointeurs
-**/
+*/
 static void mhtree_remove_node(mhtree_node **h) {
 	(*h)->empty_leaf_parent = (*h)->last_leaf->parent;
 	// test si l'element a supprimé est l'enfant gauche
@@ -210,7 +210,7 @@ static size_t mhtree_size(mhtree *h) {
 
 /**
  * Transforme un tas (arbre) en tableau
-**/
+*/
 static void mhtree_to_tab(mhtree *h, uint128_t *tab, int *id) {
     if (!mhtree_is_empty(h)) {
         mhtree_to_tab(h->left, tab, id);
@@ -221,6 +221,9 @@ static void mhtree_to_tab(mhtree *h, uint128_t *tab, int *id) {
     }
 }
 
+/**
+ * Renvoie le nombre de noeud dans le tas
+*/
 static int nb_node(size_t index, size_t len) {
 	if (index > len)
 		return 0;
@@ -230,7 +233,7 @@ static int nb_node(size_t index, size_t len) {
 
 /**
  * Construit par recuturence un arbre binaire
-**/
+*/
 static mhtree* mhtree_construction_rec(uint128_t *v, size_t index, size_t len) {
 	if (index > len)
 		return NULL;
@@ -265,7 +268,7 @@ static mhtree* mhtree_construction_rec(uint128_t *v, size_t index, size_t len) {
 
 /**
  * transforme un arbre binaire en tas
-**/
+*/
 void bt_to_heap(mhtree *h) {
 	if (mhtree_is_empty(h))
 		return;
