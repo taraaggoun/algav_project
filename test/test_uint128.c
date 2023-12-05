@@ -23,7 +23,7 @@ static void comparaison_reussie(int str_cmp, int int_cmp, char *str) {
  * cle1 > cle 2
  * cle1 = cle2
  * cle1 < cle2
-**/
+*/
 static void affiche_comparaison(uint128_t cle1, uint128_t cle2, int cmp) {
 	// Convertion des int en str
 	char cle1_str[BUF_UINT128_LEN_B10] = { 0 };
@@ -53,8 +53,7 @@ static void affiche_comparaison(uint128_t cle1, uint128_t cle2, int cmp) {
 /* ---------------------------------- MAIN ---------------------------------- */
 
 int main(int argc, char *argv[]) {
-	char pathname[PATHMAX] = { 0 };
-	argument_manager(argc, argv, pathname);
+	argument_manager(argc, argv);
 
 	FILE *file = fopen(pathname, "r");
 	if (file == NULL) {
@@ -71,11 +70,11 @@ int main(int argc, char *argv[]) {
 	while(read_uint128(file, &cle1, cle1_str)) {
 		if (read_uint128(file, &cle2, cle2_str) == 0)
 			break;
-    
+			
 		affiche_comparaison(cle1, cle2, strcmp(cle1_str, cle2_str));
 	}
 
-	printf("\n-- Fin comparaison des valeurs du fichier %s --\n\n", pathname);
+	printf("\n-- Fin comparaison des valeurs du fichier %s --\n", pathname);
 	fclose(file);
 
 	return 0;

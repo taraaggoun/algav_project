@@ -1,7 +1,7 @@
 /* -------------------------------- INCLUDES -------------------------------- */
 
 #include "test_utils.h"
-#include "../include/mhtree.h"
+#include "../include/min_heap_tree.h"
 
 /* -------------------------------- DEFINES --------------------------------- */
 

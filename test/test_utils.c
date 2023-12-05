@@ -1,4 +1,4 @@
-/* -------------------------------- INCLUDES -------------------------------- */
+/* --------------------------------- INCLUDE -------------------------------- */
 
 #include "test_utils.h"
 
@@ -28,6 +28,8 @@ static int len(char *str) {
 void argument_manager(int argc, char *argv[]) {
 	if (argc == 1)
 		strcpy(pathname, "test/cles_alea/jeu_1_nb_cles_1000.txt");
+
+	if (argc == 2)
 		strcpy(pathname, argv[1]);
 	if (argc > 2) {
 		dprintf(STDERR_FILENO, "Erreur mauvais nombre d'argument\n");

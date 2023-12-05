@@ -2,8 +2,8 @@
 
 /* -------------------------------- INCLUDES -------------------------------- */
 
-#include <stddef.h>
-#include <stdint.h>
+#include <stddef.h> // size_t
+#include <stdint.h> // uint64_t
 #include <stdbool.h>
 
 /* -------------------------------- STRUCTURE ------------------------------- */

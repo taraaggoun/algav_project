@@ -44,7 +44,7 @@ uint128_t* MD5(char *str) {
 	message[str_len] = (char) (1 << 7);
 
 	// Découpage en blocs de 512 bits :
-	for (int i = 0; i < ((taille + 64) / 512); i ++) {
+	for (uint64_t i = 0; i < ((taille + 64) / 512); i ++) {
 		uint32_t w[16] = { 0 };
 		for (int j = 0; j < 16; j++)
 			memcpy(&w[j], message + (i * 512) + (j * 32), sizeof(uint32_t));

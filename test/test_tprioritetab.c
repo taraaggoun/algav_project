@@ -39,7 +39,7 @@ void print_tas(uint128_t *tas, int taille) {
 
 int main(int argc, char *argv[]) {
 	char pathname[PATHMAX] = { 0 };
-	argument_manager(argc, argv, pathname);
+	argument_manager(argc, argv);
 
 	FILE *file = fopen(pathname, "r");
 	if (file == NULL) {
@@ -85,15 +85,15 @@ int main(int argc, char *argv[]) {
 
 	int j = 0;
 
-	uint128_t cle_2 = { 0 };
-	char cle_str_2[BUF_UINT128_LEN_B16] = { 0 };
+	 uint128_t cle_2 = { 0 };
+	 char cle_str_2[BUF_UINT128_LEN_B16] = { 0 };
 
-	while(j < NB) {
-		if (read_uint128(file_2, &cle_2, cle_str_2) == 0)
-			break;
-		listesCle_2[i] = cle_2;
-		j++;
-	}
+	 while(j < NB) {
+	 	if (read_uint128(file_2, &cle_2, cle_str_2) == 0)
+	 		break;
+	 	listesCle_2[i] = cle_2;
+	 	j++;
+	 }
 
 	printf("Liste clé 2 : ");
 	print_tas(listesCle_2, j);

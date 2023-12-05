@@ -1,6 +1,6 @@
 /* -------------------------------- INCLUDES -------------------------------- */
 
-#include "../include/mhtree.h"
+#include "../include/min_heap_tree.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -384,11 +384,10 @@ void mhtree_ajout(uint128_t k, mhtree **h) {
 }
 
 void mhtree_ajout_iteratifs(uint128_t *k, size_t len, mhtree **h) {
-	for (int i = 0; i < len; i++)
+	for (size_t i = 0; i < len; i++)
 		mhtree_ajout(k[i], h);
 }
 
-// TODO mettre a jours les pointeurs et decommenter le bloc
 mhtree* mhtree_construction(uint128_t *v, size_t len) {
 	if (len == 0)
 		return mhtree_empty();
