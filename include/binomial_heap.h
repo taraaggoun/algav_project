@@ -14,10 +14,9 @@
  * un pointeur vers ses freres: siblings
 **/
 typedef struct binomial_heap {
-	uint128_t key;
+	uint128_t *key;
 	size_t degre;
 	struct binomial_heap *childs;
-	struct binomial_heap *siblings;
 } binomh;
 
 /* -------------------------------- FUNCTIONS ------------------------------- */
