@@ -70,7 +70,6 @@ int main(int argc, char *argv[]) {
 		if (read_uint128(file, &cle, cle_str) == 0)
 			break;
 		listesCle_1[i] = cle;
-		listesCle_2[i] = cle;
 		i++;
 	}
 
@@ -91,7 +90,7 @@ int main(int argc, char *argv[]) {
 	while(j < NB) {
 		if (read_uint128(file_2, &cle_2, cle_str_2) == 0)
 			break;
-		listesCle_2[i] = cle_2;
+		listesCle_2[j] = cle_2;
 		j++;
 	}
 
@@ -106,8 +105,6 @@ int main(int argc, char *argv[]) {
 
 	ajoutIteratif(listesCle_1, NB, tasCle);
 	constructionTas(listesCle_2,i);
-
-	free(listesCle_1);
 
 	printf("Tas 1 : ");
 	print_tas(tasCle,i);
@@ -162,8 +159,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	free(listesCle_2);
-
 	free(tasCle);
+	free(listesCle_1);
 
 	printf("\n-- Fin du tas créer avec les valeurs du fichier %s --\n", pathname);
 
