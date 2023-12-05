@@ -4,10 +4,12 @@
 
 #include <ctype.h>
 #include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
 
-/* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
+/* ---------------------------- GLOBAL VARIABLE ----------------------------- */
+
+char pathname[PATHMAX] = { 0 };
+
+/* ----------------------------- PRIVATE FUNCTIONS -------------------------- */
 
 /**
  * Renvoie la taille de la chaine de caractere
@@ -21,16 +23,11 @@ static int len(char *str) {
 	return cmp;
 }
 
-/* ---------------------------- PUBLIC FUNCTIONS ---------------------------- */
+/* ----------------------------- PUBLIC FUNCTIONS --------------------------- */
 
-/** Renvoie une erreur si trop d'argument
- *  Sinon le nom du fichier et l'argument
- *  Sinon un fichier par default
-**/
-void argument_manager(int argc, char *argv[], char *pathname) {
+void argument_manager(int argc, char *argv[]) {
 	if (argc == 1)
-		strcpy(pathname, "cles_alea/jeu_1_nb_cles_1000.txt");
-	if (argc == 2)
+		strcpy(pathname, "test/cles_alea/jeu_1_nb_cles_1000.txt");
 		strcpy(pathname, argv[1]);
 	if (argc > 2) {
 		dprintf(STDERR_FILENO, "Erreur mauvais nombre d'argument\n");
@@ -38,9 +35,6 @@ void argument_manager(int argc, char *argv[], char *pathname) {
 	}
 }
 
-/**
- * Lis dans un fichier le prochain nombre
-**/
 int read_uint128(FILE *file, uint128_t *cle, char *buf) {
 	memset(buf, 0, strlen(buf));
 

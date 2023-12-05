@@ -33,13 +33,13 @@ static int compare_uint64(uint64_t cle1, uint64_t cle2) {
  * 1  si cle1 > cle2
  * 0  si cle1 = cle2
  * -1 si cle1 < cle2
-**/
+ **/
 static int compare(uint128_t cle1, uint128_t cle2) {
-	int res = compare_uint64(cle1.i1, cle2.i1);
+	int res = compare_uint64(cle1.high, cle2.high);
 	if (res != 0)
 		return res;
 
-	res = compare_uint64(cle1.i2, cle2.i2);
+	res = compare_uint64(cle1.low, cle2.low);
 	if (res != 0)
 		return res;
 
@@ -76,17 +76,16 @@ void str_to_uint128(char *str, uint128_t *cle) {
 	char buf[UINT64_BUF_LEN_B16] = { 0 };
 
 	snprintf(buf, UINT64_BUF_LEN_B16, "0x%s", str + pos);
-	cle->i2 = str_to_uint64(buf);
+	cle->low = str_to_uint64(buf);
 	pos = (pos - UINT64_STR_LEN_B16 > 1) ? pos - UINT64_STR_LEN_B16 : 2;
 
 	memset(buf, 0, UINT64_BUF_LEN_B16);
 	snprintf(buf, UINT64_BUF_LEN_B16, "0x%s", str + pos);
-	cle->i1 = str_to_uint64(buf);
+	cle->high = str_to_uint64(buf);
 }
 
 void uint128_to_str(uint128_t cle, char *str, size_t maxlen) {
-	memset(str, 0, maxlen);
-	snprintf(str, maxlen, "%lu.%lu", cle.i1, cle.i2);
+	snprintf(str, maxlen, "%lu.%lu", cle.high, cle.low);
 }
 
 /* -------------------------------------------------------------------------- */

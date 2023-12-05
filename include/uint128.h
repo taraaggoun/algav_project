@@ -8,9 +8,12 @@
 
 /* -------------------------------- STRUCTURE ------------------------------- */
 
+/**
+ * Structure unsigned int sur 128 bit
+**/
 typedef struct uint128_t {
-	uint64_t i1;
-	uint64_t i2;
+	uint64_t high;
+	uint64_t low;
 } uint128_t;
 
 /* -------------------------------- FUNCTIONS ------------------------------- */
