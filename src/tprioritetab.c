@@ -60,7 +60,7 @@ static void insertCle(uint128_t cle, uint128_t **tas) {
 
 	// Réalloue la mémoire afin de faire de la place dans le tas
 	if (tab_len == tab_capacity) {
-		*tas = realloc(*tas, 4 * tab_capacity * sizeof(uint128_t));
+		*tas = realloc(*tas, 2 * tab_capacity * sizeof(uint128_t));
 		if (tas == NULL) {
 			dprintf(STDERR_FILENO, "Erreur realloc insertCle\n");
 			exit(EXIT_FAILURE);
