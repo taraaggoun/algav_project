@@ -1,31 +1,90 @@
 /* -------------------------------- INCLUDES -------------------------------- */
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
 #include "../include/tprioritetab.h"
-#include "test_utils.h"
 
-/* -------------------------------- DEFINE --------------------------------- */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
-#define NB 5
+#define CAP_INIT 20
+#define MIN_ALLOC 1/4
+#define BUF_UINT128_LEN_B10 38
+#define BUF_UINT128_LEN_B16 36
+
+
+
+int tab_len = 0;
+int tab_capacity = CAP_INIT;
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
+/*
+ *  Fonction qui permet de changer de valeur entre elle
+ */
+static void interchangerAB(uint128_t *a, uint128_t *b) {
+	uint128_t tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+/*
+ * Fonction qui supprime la racine du tas et la remplace pas la dernière feuille
+ */
+static void supprTete(uint128_t **tas) {
+	// La clé la plus petite d'un tas est à la racine, donc on la supprime
+	// et on la remplace par le dernière clé du tas
+	(*tas)[0] = (*tas)[tab_len - 1];
+
+	//La taille du tableau diminue donc de 1
+	tab_len--;
+
+	// Réalloue la mémoire afin d'en libéré les case qu'on utilise plus
+	// si le nombre de case occupé est inferieur a 1/4 de la capacité
+	if (tab_len <= tab_capacity * MIN_ALLOC) {
+		*tas = realloc(*tas, 2 * tab_len * sizeof(uint128_t));
+		if (*tas == NULL) {
+			dprintf(STDERR_FILENO, "Erreur realloc supprTete\n");
+			exit(EXIT_FAILURE);
+		}
+		tab_capacity = 2 * tab_len;
+	}
+}
+
+/*
+ * Fonction qui insère une clé dans un tas
+ */
+static void insertCle(uint128_t cle, uint128_t **tas) {
+	//La taille du tableau augmente donc de 1
+	tab_len++;
+
+	// Réalloue la mémoire afin de faire de la place dans le tas
+	if (tab_len == tab_capacity) {
+		*tas = realloc(*tas, 2 * tab_capacity * sizeof(uint128_t));
+		if (tas == NULL) {
+			dprintf(STDERR_FILENO, "Erreur realloc insertCle\n");
+			exit(EXIT_FAILURE);
+		}
+		memset(tas + tab_len, 0, tab_capacity - tab_len);
+		tab_capacity *= 2;
+	}
+
+	//insère l'élément en fin du tableaux
+	(*tas)[tab_len - 1] = cle;
+}
+
 // Affiche une clé à la sortie
-void print_cle(uint128_t cle) {
+void print_cles(uint128_t cle) {
 	char cle_tmp[BUF_UINT128_LEN_B10] = { 0 };
 	uint128_to_str(cle, cle_tmp, BUF_UINT128_LEN_B10);
 	printf(" %s ", cle_tmp);
 }
 
 // Affiche un tableaux de clé à la sortie
-void print_tas(uint128_t *tas, int taille) {
+void print_tass(uint128_t *tas, int taille) {
 	printf("[\n");
 	for(int i = 0 ; i < taille; i++) {
-		print_cle(tas[i]);
+		print_cles(tas[i]);
 		if(i == (taille - 1)) {
 		} else {
 			printf(";\n");
@@ -34,140 +93,111 @@ void print_tas(uint128_t *tas, int taille) {
 	printf("]\n");
 }
 
+// Organise un arbre/sous_arbre en tas
+static void remonteTas(uint128_t *tas,int i){
+	int k = i;
 
-/* ---------------------------------- MAIN ---------------------------------- */
+	while(true){
+		int id_NodeP = k;
+		int id_ChildL = 2 * id_NodeP + 1;
+		int id_ChildR = 2 * id_NodeP + 2;
 
-int main(int argc, char *argv[]) {
-	char pathname[PATHMAX] = { 0 };
-	argument_manager(argc, argv);
+		// Compare avec le fils gauche
+		if (id_ChildL < tab_len && inf(tas[id_ChildL],tas[id_NodeP])) {
+		    id_NodeP = id_ChildL;
+		}
+		// Compare avec le fils droit
+		if (id_ChildR < tab_len &&  inf(tas[id_ChildR],tas[id_NodeP])) {
+			id_NodeP = id_ChildR;
+		}
 
-	FILE *file = fopen(pathname, "r");
-	if (file == NULL) {
-		dprintf(STDERR_FILENO, "Erreur fopen\n");
-		exit(EXIT_FAILURE);
+		// Si le plus grand n'est pas la racine
+		if (id_NodeP != k) {
+		    interchangerAB(&tas[k],&tas[id_NodeP]);
+
+		    k = id_NodeP;
+
+		    // Récursivement effectuer le heapify sur le sous-arbre affecté
+		    //remonteTas(tas,id_NodeP);
+		}else{
+			break;
+		}
+	}
+}
+
+/* ---------------------------- PUBLIC FUNCTIONS ---------------------------- */
+bool estUnTas(uint128_t *tas,int len){
+	for (int i = len / 2 - 1; i >= 0; i--) {
+		int id_NodeP = i;
+		int id_ChildL = 2 * i + 1;
+		int id_ChildR = 2 * i + 2;
+
+		if (id_ChildL < len && inf(tas[id_ChildL],tas[id_NodeP])) {
+            return false;
+		}
+
+		if (id_ChildR < len && inf(tas[id_ChildR],tas[id_NodeP])) {
+			return false;
+	    }
 	}
 
-	char pathname_2[PATHMAX] = "cles_alea/jeu_3_nb_cles_5000.txt";
+	return true;
+}
 
-	FILE *file_2 = fopen(pathname_2, "r");
-	if (file_2 == NULL) {
-		dprintf(STDERR_FILENO, "Erreur fopen file_2\n");
-		exit(EXIT_FAILURE);
-	}
-
-	uint128_t *listesCle_1 = calloc(1, NB * sizeof(uint128_t));
-	uint128_t *listesCle_2 = calloc(1, NB * sizeof(uint128_t));
-
-
-	printf("-- Création d'une liste de clés %s --\n\n", pathname);
+void supprMin(uint128_t *tas) {
+	supprTete(&tas);
 
 	int i = 0;
+	remonteTas(tas,i);
+}
 
-	uint128_t cle = { 0 };
-	char cle_str[BUF_UINT128_LEN_B16] = { 0 };
+void ajout(uint128_t cle, uint128_t *tas) {
+	insertCle(cle, &tas);
 
-	while(i < NB) {
-		if (read_uint128(file, &cle, cle_str) == 0)
-			break;
-		listesCle_1[i] = cle;
-		i++;
+	if (tab_len <= 0) {
+		fprintf(stderr, "Erreur de taille ajut min heap tab\n");
+		exit(EXIT_FAILURE);
 	}
 
+	if (tab_len == 1) return; // Si le tas a un element, c'est un tas
 
-	printf("Liste clé 1 : ");
-	print_tas(listesCle_1, i);
-	printf("\n");
+	// Si plus d'elements, il faut  s'assurer que c'est toujours un tas
+	int i = tab_len - 1;
 
-	printf("-- Création d'un tas à partir des clés %s --\n\n", pathname);
+	while (i != 0) {
+		int parent = (i % 2 == 1) ? (i - 1) / 2 : (i - 2) / 2;
+		if (!inf(tas[parent], tas[i])) {
+			interchangerAB(&tas[i], &tas[parent]);
+         		i = parent;
+        	} else
+	            	break;
 
-	printf("-- Création d'une liste de clés %s --\n\n", pathname_2);
+	}
+}
 
-	int j = 0;
-
-	 uint128_t cle_2 = { 0 };
-	 char cle_str_2[BUF_UINT128_LEN_B16] = { 0 };
-
-	 while(j < NB) {
-	 	if (read_uint128(file_2, &cle_2, cle_str_2) == 0)
-	 		break;
-	 	listesCle_2[i] = cle_2;
-	 	j++;
-	 }
-
-
-	printf("Liste clé 2 : ");
-	print_tas(listesCle_2, j);
-	printf("\n");
-
-	printf("-- Création d'un tas à partir des clés %s --\n\n", pathname_2);
-
-	uint128_t *tasCle = calloc(1, NB * sizeof(uint128_t));
+void ajoutIteratif(uint128_t *listeElement, int len, uint128_t *tas) {
+    for(int i = 0; i < len; i++) {
+    	ajout(listeElement[i], tas);
+    }
+}
 
 
-	ajoutIteratif(listesCle_1, NB, tasCle);
-	constructionTas(listesCle_2,i);
+void constructionTas(uint128_t *listeElement,int len){
+	for (int i = len / 2 - 1; i >= 0; i--) {
+	   remonteTas(listeElement,i);
+	}
+}
 
-	printf("Tas 1 : ");
-	print_tas(tasCle,i);
-	printf("\n");
-
-	if(estUnTas(tasCle,i)){
-		printf("Tas 1 est un tas\n");
-	}else{
-		printf("Tas 1 n'est pas un tas\n");
+uint128_t * unionAB(uint128_t * A,uint128_t * B,int lenA,int lenB){
+	uint128_t * tmp = A;
+	printf("%d %d\n", lenA, lenB);
+	for(int i = 0;i<lenB;i++){
+		insertCle(B[i],&tmp);
 	}
 
-	printf("Tas 2 : ");
-	print_tas(listesCle_2,i);
-	printf("\n");
+	constructionTas(tmp,lenA + lenB);
 
-	if(estUnTas(listesCle_2,i)){
-		printf("Tas 2 est un tas\n");
-	}else{
-		printf("Tas 2 n'est pas un tas\n");
-	}
-
-	printf("-- Union des tas créer à partir des clés de %s & %s --\n\n", pathname,pathname_2);
-
-	uint128_t *unionTas;
-
-	unionTas = unionAB(listesCle_2,tasCle,j,i);
-
-	printf("Tas Union:");
-	print_tas(unionTas,i+j);
-	printf("\n");
-
-	if(estUnTas(unionTas,i+j)){
-		printf("Tas Union est un tas\n");
-	}else{
-		printf("Tas Union n'est pas un tas\n");
-	}
-
-	printf("\n-- Fin du tas créer avec les tas des fichiers %s & %s --\n", pathname,pathname_2);
-
-	printf("-- Suppression de la plus petite clé du tas créer à partir des clés %s --\n\n", pathname);
-
-	supprMin(tasCle);
-
-	printf("Tas:");
-	print_tas(tasCle,i-1);
-	printf("\n");
-
-	if(estUnTas(tasCle,i-1)){
-		printf("Tas supprMin est un tas\n");
-	}else{
-		printf("Tas supprMin n'est pas un tas\n");
-	}
-
-	free(listesCle_2);
-	free(tasCle);
-	free(listesCle_1);
-
-	printf("\n-- Fin du tas créer avec les valeurs du fichier %s --\n", pathname);
-
-	fclose(file);
-
-	return 0;
+	return tmp;
 }
 
 /* -------------------------------------------------------------------------- */
