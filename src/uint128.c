@@ -20,7 +20,7 @@
  * 1  si cle1 > cle2
  * 0  si cle1 = cle2
  * -1 si cle1 < cle2
- **/
+*/
 static int compare_uint64(uint64_t cle1, uint64_t cle2) {
 	if (cle1 > cle2) return  1;
 	if (cle1 < cle2) return -1;
@@ -31,7 +31,7 @@ static int compare_uint64(uint64_t cle1, uint64_t cle2) {
  * 1  si cle1 > cle2
  * 0  si cle1 = cle2
  * -1 si cle1 < cle2
- **/
+*/
 static int compare(uint128_t cle1, uint128_t cle2) {
 	int res = compare_uint64(cle1.high, cle2.high);
 	if (res != 0)
@@ -46,7 +46,7 @@ static int compare(uint128_t cle1, uint128_t cle2) {
 
 /**
  * Convertie une chaine de caractere en uint32
-**/
+*/
 static uint64_t str_to_uint64(char *str) {
 	char *endptr = NULL;
 	uint64_t res = strtoul(str, &endptr, 16);

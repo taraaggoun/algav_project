@@ -17,33 +17,33 @@ typedef struct binary_search_tree {
 /**
  * Renvoie l'arbre binaire de recherche vide
 */
-bst* create_bst_empty(void);
+bst* bst_create_empty(void);
 
 /**
  * Renvoie l'abr qui a pour valeur de racine k
  * et comme fils gauche: left et fils droit: right
 */
-bst* create_bst(uint128_t k, bst *left, bst *right);
+bst* bst_create(uint128_t k, bst *left, bst *right);
 
 /**
  * Libere la memoire d'un abr
 */
-void free_bst(bst *t);
+void bst_free(bst *t);
 
 /**
  * Renvoie si l'abr est un arbre vide
 */
-bool is_bst_empty(bst *t);
+bool bst_is_empty(bst *t);
 
 /**
  * Renvoie le max de b
 */
-bst* max_bst(bst *t);
+bst* bst_max(bst *t);
 
 /**
  * Renvoie le min de b
 */
-bst* min_bst(bst *t);
+bst* bst_min(bst *t);
 
 /**
  * Renvoie si l'arbre est un abr
@@ -53,22 +53,22 @@ bool is_bst(bst *t);
 /**
  * Renvoie l'abr avec la valeur k ajouté
 */
-bst* add_bst(uint128_t k, bst *t);
+bst* bst_add(uint128_t k, bst *t);
 
 /**
  * Renvoie l'abr avec la valeur k supprimé
  * si il est pas dans l'arbre renvoie NULL
 */
-bst* supp_bst(bst *t, uint128_t k);
+bst* bst_supp(bst *t, uint128_t k);
 
 /**
  * Cherche si k appartient a l'arbre
 */
-bst* search_bst(bst *t, uint128_t k);
+bst* bst_search(bst *t, uint128_t k);
 
 /**
  * fonction d'affichage.
 */
-void print_bst (bst *t);
+void bst_print (bst *t);
 
 /* -------------------------------------------------------------------------- */

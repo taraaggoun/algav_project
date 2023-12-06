@@ -9,13 +9,65 @@
 
 #include "../include/binomial_heap.h"
 
-/* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
+/* ---------------------------- PRIVATE FUNCTION ---------------------------- */
 
+/**
+ * Renvoie une copy de bh
+ * alloue un fils de plus si b == true
+*/
+static binomh* copy(binomh *bh, bool b) {
+	binomh *res = binomh_create(*(bh->key));
+	res->childs = calloc(1, sizeof(binomh) * (bh->degre + (b == true)));
+	if (res == NULL) {
+		dprintf(STDERR_FILENO, "Erreur calloc copy childs\n");
+		exit(EXIT_FAILURE);
+	}
+	*(res->key) = *(bh->key);
+	res->degre = bh->degre;
+	for (size_t i = 0; i < bh->degre; i++) {
+        	res->childs[i] = *copy(&(bh->childs[i]), false);
+    	}
+
+	return res;
+}
+
+/**
+ * Fonctions d'affichage
+*/
+static void print_head(int depth, int addr) {
+	if (depth > 1) {
+		int pre = addr / 2;
+		print_head(depth - 1, pre);
+		printf("%s", (pre % 2) != (addr % 2) ? "|    " : "     ");
+		return;
+    	}
+    	if (depth == 1)
+		printf ("     ");
+}
+
+#define BUF_UINT128_LEN_B10 38
+static void pretty_rec(binomh *bh, int depth, int addr) {
+	if (binomh_is_empty(bh)) {
+		print_head(depth, addr);
+		printf("|----N\n");
+		return;
+    	}
+    	for (size_t i = 0; i < bh->degre/2; i++) {
+    		pretty_rec(&(bh->childs[i]), depth + 1, 2 * addr + i);
+	}
+	print_head(depth, addr);
+    	char c = (depth == 0) ? '-' : '|';
+     	char buf[BUF_UINT128_LEN_B10] = { 0 };
+    	uint128_to_str(*(bh->key), buf, BUF_UINT128_LEN_B10);
+    	printf("%c----%s\n", c, buf);
+	for (size_t i = bh->degre/2; i < bh->degre; i++) {
+    		pretty_rec(&(bh->childs[i]), depth + 1, 2 * addr + i);
+	}
+}
 
 /* ---------------------------- PUBLIC FUNCTIONS ---------------------------- */
 
-// Crée le tas binomiale vide
-binomh* create_bin_heap_empty() {
+binomh* binomh_create_empty() {
 	binomh *bh = calloc(1, sizeof(binomh));
 	if (bh == NULL) {
 		dprintf(STDERR_FILENO, "Erreur calloc create bh empty");
@@ -24,45 +76,54 @@ binomh* create_bin_heap_empty() {
 	return bh;
 }
 
-binomh* create_bin_heap(uint128_t k, int d, binomh *childs) {
-	binomh *bh = create_bin_heap_empty();
-	bh->childs = calloc(1, d * sizeof(binomh));
-	if (bh->childs = NULL) {
-		dprintf(STDERR_FILENO, "Erreur calloc create bh node");
+binomh* binomh_create(uint128_t k) {
+	binomh *bh = binomh_create_empty();
+	bh->key = calloc(1, sizeof(uint128_t));
+	if (bh->key == NULL) {
+		dprintf(STDERR_FILENO, "Erreur calloc create bh empty");
 		exit(EXIT_FAILURE);
 	}
 	*(bh->key) = k;
-	bh->degre = d;
-	memcpy(bh->childs, childs, d * sizeof(binomh));
+	bh->degre = 0;
 	return bh;
 }
 
-void free_bin_heap(binomh *bh) {
+void binomh_free(binomh *bh) {
 	if (bh == NULL)
 		return;
-	free_bin_heap(bh->childs);
+	for (size_t i = 0; i < bh->degre; i++)
+		binomh_free(&(bh->childs[i]));
+	free(bh->key);
 	free(bh);
 }
 
-bool binh_is_empty(binomh *bh) {
+bool binomh_is_empty(binomh *bh) {
 	return bh == NULL || bh->key == NULL;
 }
 
-// TODO : faire la fonction
 binomh* binomh_union(binomh *bh1, binomh *bh2) {
-	if (binh_is_empty(bh1))
-		return bh2;
-	if (binh_is_empty(bh2))
-		return bh1;
-	binomh *res = malloc(sizeof(binomh));
-	if (res == NULL) {
-		dprintf(STDERR_FILENO, "Erreur calloc union");
+	if (bh1->degre != bh2->degre) {
+		dprintf(STDERR_FILENO, "Erreur Union pas meme taille\n");
 		exit(EXIT_FAILURE);
 	}
-	res->childs = calloc(1, sizeof(binomh) * (bh1->degre + 1));
-	*(res->key) = *(bh1->key);
-	res->degre = bh1->degre;
-	memcpy(res->childs, bh1->childs, bh1->degre * sizeof(binomh));
+	if (binomh_is_empty(bh1))
+		return binomh_create_empty();
+
+	binomh *res;
+	if (inf(*(bh1->key), *(bh2->key)) == true) {
+		res = copy(bh1, true);
+		res->childs[res->degre] = *copy(bh2, false);
+	}
+	else {
+		res = copy(bh2, true);
+		res->childs[res->degre] = *copy(bh1, false);
+	}
+	res->degre++;
+	return res;
+}
+
+void binomh_print(binomh *bh) {
+    pretty_rec(bh, 0, 0);
 }
 
 /* -------------------------------------------------------------------------- */

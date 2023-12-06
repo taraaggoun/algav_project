@@ -32,52 +32,52 @@ typedef mhtree_node mhtree;
 
 /**
  * Crée un tas vide
-**/
+*/
 mhtree* mhtree_empty(void);
 
 /**
  * Libere la memoire d'un tas
-**/
+*/
 void mhtree_free(mhtree *node);
 
 /**
  * Test si le tas est vide
-**/
+*/
 bool mhtree_is_empty(mhtree *h);
 
 /**
  * Affiche un Tas
-**/
+*/
 void mhtree_print(mhtree *h);
 
 /**
  * Test si l'arbre est un tas
-**/
+*/
 bool is_mhtree(mhtree *h);
 
 /**
  * Supprime le min du tas
-**/
+*/
 uint128_t mhtree_suppr_min(mhtree **h);
 
 /**
  * Ajoute au tas, un element
-**/
+*/
 void mhtree_ajout(uint128_t k, mhtree **h);
 
 /**
  * Ajoute au tas, len elements
-**/
+*/
 void mhtree_ajout_iteratifs(uint128_t *k, size_t len, mhtree **h);
 
 /**
  * Construit un arbre a partir des elements de la liste
-**/
+*/
 mhtree* mhtree_construction(uint128_t *v, size_t len);
 
 /**
  * Fais l'union des deux tas
-**/
+*/
 mhtree* mhtree_union(mhtree *h1, mhtree *h2);
 
 /* -------------------------------------------------------------------------- */
