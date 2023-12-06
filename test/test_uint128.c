@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 	while(read_uint128(file, &cle1, cle1_str)) {
 		if (read_uint128(file, &cle2, cle2_str) == 0)
 			break;
-			
+
 		affiche_comparaison(cle1, cle2, strcmp(cle1_str, cle2_str));
 	}
 

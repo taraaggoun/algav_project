@@ -24,7 +24,9 @@ static binomh* copy(binomh *bh, bool b) {
 	}
 	*(res->key) = *(bh->key);
 	res->degre = bh->degre;
-	memcpy(res->childs, bh->childs, bh->degre * sizeof(binomh));
+	for (size_t i = 0; i < bh->degre; i++) {
+        	res->childs[i] = *copy(&(bh->childs[i]), false);
+    	}
 
 	return res;
 }
@@ -90,7 +92,7 @@ void binomh_free(binomh *bh) {
 	if (bh == NULL)
 		return;
 	for (size_t i = 0; i < bh->degre; i++)
-		binomh_free(bh->childs);
+		binomh_free(&(bh->childs[i]));
 	free(bh->key);
 	free(bh);
 }
@@ -100,19 +102,21 @@ bool binomh_is_empty(binomh *bh) {
 }
 
 binomh* binomh_union(binomh *bh1, binomh *bh2) {
+	if (bh1->degre != bh2->degre) {
+		dprintf(STDERR_FILENO, "Erreur Union pas meme taille\n");
+		exit(EXIT_FAILURE);
+	}
 	if (binomh_is_empty(bh1))
-		return copy(bh2, false);
-	if (binomh_is_empty(bh2))
-		return copy(bh1, false);
+		return binomh_create_empty();
 
 	binomh *res;
-	if (inf(*(bh1->key), *(bh1->key)) == true) {
+	if (inf(*(bh1->key), *(bh2->key)) == true) {
 		res = copy(bh1, true);
-		res->childs[res->degre] = *bh2;
+		res->childs[res->degre] = *copy(bh2, false);
 	}
 	else {
 		res = copy(bh2, true);
-		res->childs[res->degre] = *bh1;
+		res->childs[res->degre] = *copy(bh1, false);
 	}
 	res->degre++;
 	return res;
