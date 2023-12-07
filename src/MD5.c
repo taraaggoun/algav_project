@@ -139,9 +139,7 @@ uint128_t* MD5(char *str) {
 	}
 	uint128_t *u = calloc(1, sizeof(uint128_t));
 	u->high = ((uint64_t)h3 << 32) | h2;
-	u->high = uint64_little(u->high);
 	u->low  = ((uint64_t)h1 << 32) | h0;
-	u->low = uint64_little(u->low);
 	free(message);
 	return u;
 }
