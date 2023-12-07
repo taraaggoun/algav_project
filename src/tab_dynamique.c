@@ -50,18 +50,6 @@ void constTabDyn(table_dynamique *table, int initialCapacity) {
 }
 
 void addElement(table_dynamique *table, uint128_t element) {
-	// Vérifier si une augmentation de la capacité est nécessaire
-	if (table->size == table->capacity) {
-        	// Doubler la capacité en utilisant realloc
-        	table->capacity *= 2;
-        	table->data = (uint128_t *) realloc(table->data, table->capacity * sizeof(uint128_t));
-
-        	if (table->data == NULL) {
-            		fprintf(stderr, "Erreur d'allocation mémoire\n");
-            		exit(EXIT_FAILURE);
-        	}
-    	}
-
 	// Réalloue la mémoire afin de faire de la place dans le tas
     	if (table->size == table->capacity) {
     		table->data = realloc(table->data, 2 * table->capacity * sizeof(uint128_t));

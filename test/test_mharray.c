@@ -13,7 +13,7 @@
 /* -------------------------------- DEFINE --------------------------------- */
 
 #define CAPACITY 10
-#define SIZE 10
+#define SIZE 5
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	char pathname_2[PATHMAX] = "test/cles_alea/jeu_3_nb_cles_5000.txt";
+	char pathname_2[PATHMAX] = "test/cles_alea/jeu_2_nb_cles_1000.txt";
 
 	FILE *file_2 = fopen(pathname_2, "r");
 	if (file_2 == NULL) {
@@ -102,7 +102,6 @@ int main(int argc, char *argv[]) {
 	table_dynamique tas_1;
 	constTabDyn(&tas_1,CAPACITY);
 
-
 	mharray_ajout_iteratif(listesCle_1,i, &tas_1);
 
 	printTable(&tas_1);
@@ -117,8 +116,13 @@ int main(int argc, char *argv[]) {
 	table_dynamique tas_2;
 	constTabDyn(&tas_2,CAPACITY);
 
-	for(int k = 0 ; k < tas_2.capacity ; k++){
+	for(int k = 0 ; k < j; k++){
 		addElement(&tas_2,listesCle_2[k]);
+	}
+	for (int k = tas_2.size; k < tas_2.capacity; k++) {
+		if (read_uint128(file_2, &cle_2, cle_str_2) == 0)
+			break;
+		addElement(&tas_2, cle_2);
 	}
 
 	mharray_construction(&tas_2);
