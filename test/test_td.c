@@ -11,14 +11,13 @@
 
 /* -------------------------------- DEFINE --------------------------------- */
 
-#define CAPACITY 100
+#define CAPACITY 10
 #define SIZE 10
 
 /* ---------------------------------- MAIN ---------------------------------- */
 
 int main(int argc, char *argv[]) {
-	char pathname[PATHMAX] = { 0 };
-	argument_manager(argc, argv, pathname);
+	argument_manager(argc, argv);
 
 	FILE *file = fopen(pathname, "r");
 	if (file == NULL) {
@@ -27,8 +26,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	uint128_t *listeCle_1 = calloc(1, SIZE * sizeof(uint128_t));
-
-
 
 	printf("-- Création d'une liste de clés %s --\n\n", pathname);
 
@@ -50,7 +47,7 @@ int main(int argc, char *argv[]) {
 
 	table_dynamique table;
 
-	constTableDyn(&table,CAPACITY);
+	constTabDyn(&table,CAPACITY);
 
 	for (int j = 0; j < i ; j++){
 		addElement(&table,listeCle_1[j]);
@@ -60,15 +57,17 @@ int main(int argc, char *argv[]) {
 
 	printf("-- Fin de création d'un tableau dynamique à partir de cette liste de clés %s --\n\n", pathname);
 
-	printf("-- Suppression de l'élément [%d] du tableau dynamique --\n",4);
+	printf("-- Suppression de l'élément [%d] du tableau dynamique --\n",table.size - 1);
 
-	supprElement(&table,table.data[4]);
+	supprElement(&table,table.data[table.size - 1]);
 
 	printTable(&table);
 
 	printf("--Fin de suppression de l'élément [%d] du tableau dynamique --\n",4);
 
 	freeTable(&table);
+	free(listeCle_1);
+	fclose(file);
 
 	return 0;
 }
