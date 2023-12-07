@@ -5,15 +5,23 @@
 #include "test_utils.h"
 
 #include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <math.h>
+
 
 /* -------------------------------- DEFINES --------------------------------- */
 
-#define NB_UINT128 2
+#define NB_UINT128 3
 
 /* ---------------------------------- MAIN ---------------------------------- */
 
 int main(int argc, char *argv[]) {
-	argument_manager(argc, argv);
+	char pathname[PATHMAX] = { "cles_alea/jeu_1_nb_cles_1000.txt" };
+	//argument_manager(argc, argv);
+
+	printf("%s\n",pathname);
 
 	FILE *file = fopen(pathname, "r");
 	if (file == NULL) {
@@ -21,23 +29,49 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	uint128_t cle = { 0 };
-	char cle_str[BUF_UINT128_LEN_B16] = { 0 };
-	binomh *bh = binomh_create_empty();
+	//uint128_t cle = { 0 };
+	//char cle_str[BUF_UINT128_LEN_B16] = { 0 };
+
+	/*binomh *bh = binomh_create_empty();
 	printf("Tournois Binomiale vide \n");
 	binomh_print(bh);
-	printf("\n");
+	printf("\n");*/
 
-	size_t i = NB_UINT128;
-	while( i-- > 0 && read_uint128(file, &cle, cle_str)) {
-		binomh *tmp = binomh_create(cle);
-		binomh *uni = binomh_union(bh, tmp);
-		binomh_free(tmp);
-		binomh_free(bh);
-		bh = NULL;
-		bh = uni;
+
+	//size_t i = pow(2, NB_UINT128);
+
+	uint128_t * tmp = (uint128_t*)malloc(10*sizeof(uint128_t));
+	printf("a\n");
+
+	int i = 0;
+
+	uint128_t cle = { 0 };
+	char cle_str[BUF_UINT128_LEN_B16] = { 0 };
+
+	while(i < pow(2, NB_UINT128)) {
+		if (read_uint128(file, &cle, cle_str) == 0)
+			break;
+		tmp[i] = cle;
+		i++;
 	}
-	binomh_print(bh);
+	/*while( --i >= 0 && read_uint128(file, &cle, cle_str)) {
+		printf("b\n");
+		tmp[i]=cle;
+		//binomh *tmp = binomh_create(cle);
+		//binomh *uni = binomh_union(bh, tmp);
+		//binomh_free(tmp);
+		//binomh_free(bh);
+		//bh = NULL;
+		//bh = uni;
+	}*/
+	printf("c\n");
+
+	binomh *uni = binomK_create(tmp,NB_UINT128);
+	printf("d\n");
+
+	//binomh_print(tmp);
+	binomh_print(uni);
+	printf("e\n");
 
 	// print_bst(bst);
 	// printf("L'arbre est un abr ? %d\n", is_bst(bst));

@@ -41,7 +41,10 @@ int main(int argc, char *argv[]) {
 	char pathname[PATHMAX] = { 0 };
 	argument_manager(argc, argv);
 
+	printf(" pathname %s",pathname);
+
 	FILE *file = fopen(pathname, "r");
+
 	if (file == NULL) {
 		dprintf(STDERR_FILENO, "Erreur fopen\n");
 		exit(EXIT_FAILURE);

@@ -51,4 +51,6 @@ binomh* binomh_union(binomh *bh1, binomh *bh2);
 */
 void binomh_print(binomh *bh);
 
+binomh* binomK_create(uint128_t* arrayCles, int k);
+
 /* -------------------------------------------------------------------------- */

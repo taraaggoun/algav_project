@@ -26,8 +26,9 @@ static int len(char *str) {
 /* ----------------------------- PUBLIC FUNCTIONS --------------------------- */
 
 void argument_manager(int argc, char *argv[]) {
+	printf("%d",argc);
 	if (argc == 1)
-		strcpy(pathname, "test/cles_alea/jeu_1_nb_cles_1000.txt");
+		strcpy(pathname, "cles_alea/jeu_1_nb_cles_1000.txt");
 
 	if (argc == 2)
 		strcpy(pathname, argv[1]);
