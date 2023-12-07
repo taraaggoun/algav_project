@@ -31,12 +31,12 @@ void constTabDyn(table_dynamique *table, int initialCapacity);
 void addElement(table_dynamique *table, uint128_t element);
 
 /**
- * Fonction pour ajouter un élément au tableau dynamique
+ * Fonction pour supprimer un élément au tableau dynamique
  */
 void supprElement(table_dynamique *table, uint128_t element);
 
 /**
- * Fonction pour ajouter un élément au tableau dynamique
+ * Fonction pour supprimer un élément au tableau dynamique
 */
 void supprElementInd(table_dynamique *table, int indice);
 

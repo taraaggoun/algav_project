@@ -1,204 +1,171 @@
 /* -------------------------------- INCLUDES -------------------------------- */
 
-#include "../include/min_heap_array.h"
-#include "test_utils.h"
-#include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
-#define CAP_INIT 20
-#define MIN_ALLOC 1/4
-#define BUF_UINT128_LEN_B10 38
-#define BUF_UINT128_LEN_B16 36
+#include "./test_utils.h"
+#include "../include/tab_dynamique.h"
+#include "../include/min_heap_array.h"
 
-// int tab_len = 0;
-// int tab_capacity = CAP_INIT;
+
+/* -------------------------------- DEFINE --------------------------------- */
+
+#define CAPACITY 10
+#define SIZE 10
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
-// /**
-//  *  Fonction qui permet de changer de valeur entre elle
-//  */
-// static void swapAB(uint128_t *a, uint128_t *b) {
-// 	uint128_t tmp = *a;
-// 	*a = *b;
-// 	*b = tmp;
-// }
+// Affiche une clé à la sortie
+void printCles(uint128_t cle) {
+	char cle_tmp[BUF_UINT128_LEN_B10] = { 0 };
+	uint128_to_str(cle, cle_tmp, BUF_UINT128_LEN_B10);
+	printf(" %s ", cle_tmp);
+}
 
-// /**
-//  * Fonction qui supprime la racine du tas et la remplace pas la dernière feuille
-//  */
-// static void supprTete(uint128_t **tas) {
-// 	// La clé la plus petite d'un tas est à la racine, donc on la supprime
-// 	// et on la remplace par le dernière clé du tas
-// 	(*tas)[0] = (*tas)[tab_len - 1];
+// Affiche un tableaux de clé à la sortie
+void printTas(uint128_t *tas, int taille) {
+	printf("[\n");
+	for(int i = 0 ; i < taille; i++) {
+		printCles(tas[i]);
+		if(i == (taille - 1)) {
+		} else {
+			printf(";\n");
+		}
+	}
+	printf("]\n\n");
+}
 
-// 	//La taille du tableau diminue donc de 1
-// 	tab_len--;
+/* ---------------------------------- MAIN ---------------------------------- */
 
-// 	// Réalloue la mémoire afin d'en libéré les case qu'on utilise plus
-// 	// si le nombre de case occupé est inferieur a 1/4 de la capacité
-// 	if (tab_len <= tab_capacity * MIN_ALLOC) {
-// 		*tas = realloc(*tas, 2 * tab_len * sizeof(uint128_t));
-// 		if (*tas == NULL) {
-// 			dprintf(STDERR_FILENO, "Erreur realloc supprTete\n");
-// 			exit(EXIT_FAILURE);
-// 		}
-// 		tab_capacity = 2 * tab_len;
-// 	}
-// }
+int main(int argc, char *argv[]) {
+	argument_manager(argc, argv);
 
-// /**
-//  * Fonction qui insère une clé dans un tas
-//  */ 
-// static void insertCle(uint128_t cle, uint128_t **tas) {
-// 	//La taille du tableau augmente donc de 1
-// 	tab_len++;
+	FILE *file = fopen(pathname, "r");
+	if (file == NULL) {
+		dprintf(STDERR_FILENO, "Erreur fopen\n");
+		exit(EXIT_FAILURE);
+	}
 
-// 	// Réalloue la mémoire afin de faire de la place dans le tas
-// 	if (tab_len == tab_capacity) {
-// 		*tas = realloc(*tas, 2 * tab_capacity * sizeof(uint128_t));
-// 		if (tas == NULL) {
-// 			dprintf(STDERR_FILENO, "Erreur realloc insertCle\n");
-// 			exit(EXIT_FAILURE);
-// 		}
-// 		memset(tas + tab_len, 0, tab_capacity - tab_len);
-// 		tab_capacity *= 2;
-// 	}
+	char pathname_2[PATHMAX] = "test/cles_alea/jeu_3_nb_cles_5000.txt";
 
-// 	//insère l'élément en fin du tableaux
-// 	(*tas)[tab_len - 1] = cle;
-// }
+	FILE *file_2 = fopen(pathname_2, "r");
+	if (file_2 == NULL) {
+		dprintf(STDERR_FILENO, "Erreur fopen file_2\n");
+		exit(EXIT_FAILURE);
+	}
 
-// /**
-//  * Affiche une clé à la sortie
-// */
-// void print_cles(uint128_t cle) {
-// 	char cle_tmp[BUF_UINT128_LEN_B10] = { 0 };
-// 	uint128_to_str(cle, cle_tmp, BUF_UINT128_LEN_B10);
-// 	printf(" %s ", cle_tmp);
-// }
+	uint128_t *listesCle_1 = calloc(1, SIZE * sizeof(uint128_t));
+	uint128_t *listesCle_2 = calloc(1, SIZE * sizeof(uint128_t));
 
-// /**
-//  * Affiche un tableaux de clé à la sortie
-// */
-// void print_tass(uint128_t *tas, int taille) {
-// 	printf("[\n");
-// 	for(int i = 0 ; i < taille; i++) {
-// 		print_cles(tas[i]);
-// 		if(i == (taille - 1)) {
-// 		} else {
-// 			printf(";\n");
-// 		}
-// 	}
-// 	printf("]\n");
-// }
 
-// /**
-//  * Organise un arbre/sous_arbre en tas
-// */
-// static void remonteTas(uint128_t *tas,int i){
-// 	int k = i;
-// 	while(true) {
-// 		int id_NodeP = k;
-// 		int id_ChildL = 2 * id_NodeP + 1;
-// 		int id_ChildR = 2 * id_NodeP + 2;
-// 		// Compare avec le fils gauche
-// 		if (id_ChildL < tab_len && inf(tas[id_ChildL], tas[id_NodeP])) {
-// 		    id_NodeP = id_ChildL;
-// 		}
-// 		// Compare avec le fils droit
-// 		if (id_ChildR < tab_len &&  inf(tas[id_ChildR], tas[id_NodeP])) {
-// 			id_NodeP = id_ChildR;
-// 		}
+	printf("-- Création d'une liste de clés %s --\n\n", pathname);
 
-// 		// Si le plus grand n'est pas la racine
-// 		if (id_NodeP != k) {
-// 		    swapAB(&tas[k],&tas[id_NodeP]);
-// 		    k = id_NodeP;
-// 		    // Récursivement effectuer le heapify sur le sous-arbre affecté
-// 		    //remonteTas(tas,id_NodeP);
-// 		} else {
-// 			break;
-// 		}
-// 	}
-// }
+	int i = 0;
 
-/* ---------------------------- PUBLIC FUNCTIONS ---------------------------- */
+	uint128_t cle = { 0 };
+	char cle_str[BUF_UINT128_LEN_B16] = { 0 };
 
-// bool is_heap(uint128_t *tas,int len) {
-// 	for (int i = len / 2 - 1; i >= 0; i--) {
-// 		int id_NodeP = i;
-// 		int id_ChildL = 2 * i + 1;
-// 		int id_ChildR = 2 * i + 2;
+	while(i < SIZE) {
+		if (read_uint128(file, &cle, cle_str) == 0)
+			break;
+		listesCle_1[i] = cle;
+		i++;
+	}
 
-// 		if (id_ChildL < len && inf(tas[id_ChildL], tas[id_NodeP])) {
-//         		return false;
-// 		}
 
-// 		if (id_ChildR < len && inf(tas[id_ChildR], tas[id_NodeP])) {
-// 			return false;
-// 	    }
-// 	}
-// 	return true;
-// }
+	printf("Liste clé 1 : \n");
+	printTas(listesCle_1, i);
+	printf("\n\n");
 
-// void mharray_suppr_min(uint128_t *tas) {
-// 	supprTete(&tas);
+	printf("-- Création d'une liste de clés %s --\n\n", pathname_2);
 
-// 	int i = 0;
-// 	remonteTas(tas, i);
-// }
+	int j = 0;
 
-// void mharray_ajout(uint128_t cle, uint128_t *tas) {
-// 	insertCle(cle, &tas);
+	uint128_t cle_2 = { 0 };
+	char cle_str_2[BUF_UINT128_LEN_B16] = { 0 };
 
-// 	if (tab_len <= 0) {
-// 		fprintf(stderr, "Erreur de taille ajut min heap tab\n");
-// 		exit(EXIT_FAILURE);
-// 	}
+	while(j < SIZE) {
+		if (read_uint128(file_2, &cle_2, cle_str_2) == 0)
+			break;
+		listesCle_2[j] = cle_2;
+		j++;
+	}
 
-// 	if (tab_len == 1) return; // Si le tas a un element, c'est un tas
+	printf("Liste clé 2 : \n");
+	printTas(listesCle_2, j);
+	printf("\n\n");
 
-// 	// Si plus d'elements, il faut  s'assurer que c'est toujours un tas
-// 	int i = tab_len - 1;
+	printf("-- Création d'un tas à partir des clés %s --\n\n", pathname);
 
-// 	while (i != 0) {
-// 		int parent = (i % 2 == 1) ? (i - 1) / 2 : (i - 2) / 2;
-// 		if (!inf(tas[parent], tas[i])) {
-// 			swapAB(&tas[i], &tas[parent]);
-//          		i = parent;
-//         	} else
-// 	            	break;
-// 	}
-// }
+	table_dynamique tas_1;
+	constTabDyn(&tas_1,CAPACITY);
 
-// void mharray_ajout_iteratif(uint128_t *listeElement, int len, uint128_t *tas) {
-//     for(int i = 0; i < len; i++) {
-//     	mharray_ajout(listeElement[i], tas);
-//     }
-// }
 
-// void mharray_construction(uint128_t *listeElement, int len) {
-// 	for (int i = len / 2 - 1; i >= 0; i--) {
-// 	   remonteTas(listeElement,i);
-// 	}
-// }
+	mharray_ajout_iteratif(listesCle_1,i, &tas_1);
 
-// uint128_t * mharray_union(uint128_t * A,uint128_t * B,int lenA,int lenB) {
-// 	uint128_t * tmp = A;
-// 	printf("%d %d\n", lenA, lenB);
-// 	for(int i = 0;i < lenB; i++) {
-// 		insertCle(B[i], &tmp);
-// 	}
+	printTable(&tas_1);
 
-// 	mharray_construction(tmp, lenA + lenB);
-// 	return tmp;
-// }
+	if(is_heap(&tas_1)){
+		printf("Tas 1 est un tas\n\n");
+	}else{
+		printf("Tas 1 n'est pas un tas\n\n");
+	}
 
-/* -------------------------------------------------------------------------- */
+	printf("-- Création d'un tas à partir des clés %s --\n\n", pathname_2);
+	table_dynamique tas_2;
+	constTabDyn(&tas_2,CAPACITY);
 
-int main()  {
+	for(int k = 0 ; k < tas_2.capacity ; k++){
+		addElement(&tas_2,listesCle_2[k]);
+	}
+
+	mharray_construction(&tas_2);
+
+	printTable(&tas_2);
+
+	if(is_heap(&tas_2)){
+		printf("Tas 2 est un tas\n\n");
+	}else{
+		printf("Tas 2 n'est pas un tas\n\n");
+	}
+
+	printf("-- Union des tas créer à partir des clés de %s & %s --\n\n", pathname,pathname_2);
+
+	table_dynamique unionTas = mharray_union(&tas_1,&tas_2);
+
+	printTable(&unionTas);
+
+	if(is_heap(&unionTas)){
+		printf("Tas Union est un tas\n\n");
+	}else{
+		printf("Tas Union n'est pas un tas\n\n");
+	}
+
+	printf("-- Suppression de la plus petite clé du tas créer à partir des clés %s --\n\n", pathname);
+
+	mharray_suppr_min(&tas_1);
+
+	printTable(&tas_1);
+
+	if(is_heap(&tas_1)){
+		printf("Tas mharray_suppr_min est un tas\n\n");
+	}else{
+		printf("Tas mharray_suppr_min n'est pas un tas\n\n");
+	}
+
+
+	freeTable(&unionTas);
+	freeTable(&tas_2);
+	freeTable(&tas_1);
+
+	free(listesCle_2);
+	free(listesCle_1);
+	fclose(file_2);
+	fclose(file);
+
 	return 0;
 }
+
+/* -------------------------------------------------------------------------- */

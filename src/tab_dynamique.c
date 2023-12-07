@@ -103,7 +103,7 @@ void supprElement(table_dynamique *table, uint128_t element) {
 }
 
 void supprElementInd(table_dynamique *table, int indice) {
-	for(; indice < table->size ; indice++) {
+	for(; indice < table->size - 1 ; indice++) {
 		swapAB(&table->data[indice], &table->data[indice + 1]);
 	}
 	table->size--;
