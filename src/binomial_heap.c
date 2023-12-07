@@ -27,7 +27,6 @@ static binomh* copy(binomh *bh, bool b) {
 	for (size_t i = 0; i < bh->degre; i++) {
         	res->childs[i] = *copy(&(bh->childs[i]), false);
     	}
-
 	return res;
 }
 

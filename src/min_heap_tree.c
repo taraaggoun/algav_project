@@ -77,9 +77,9 @@ static void swap_leave_to_root(mhtree *h) {
 
 	bool parent_is_min;
 	parent_is_min = inf(*(h->parent->key), *(h->key));
-	if(!parent_is_min) {
+	if(!parent_is_min)
 		swap_node_value(h, h->parent);
-	}
+
 	swap_leave_to_root(h->parent);
 }
 
@@ -103,9 +103,9 @@ static void maj_ptr(mhtree_node *new_node) {
 	mhtree_node *cur = new_node;
 	mhtree_node *new_empty = new_node->parent;
 
-	if (new_node->parent->right == NULL) {
+	if (new_node->parent->right == NULL)
 		new_empty = new_node->parent;
-	}
+
 	else {
 		new_empty = new_node->left;
 		while(cur->parent != NULL && cur == cur->parent->right)
@@ -120,7 +120,6 @@ static void maj_ptr(mhtree_node *new_node) {
 			cur = cur->left;
 		new_empty = cur;
 	}
-
 	cur = new_node;
 	while(cur->parent != NULL) {
 		cur->parent->last_leaf = new_node;

@@ -47,11 +47,10 @@ int main(int argc, char *argv[]) {
 
 	table_dynamique table;
 
-	constTabDyn(&table,CAPACITY);
+	constTabDyn(&table, CAPACITY);
 
-	for (int j = 0; j < i ; j++){
+	for (int j = 0; j < i ; j++)
 		addElement(&table,listeCle_1[j]);
-	}
 
 	printTable(&table);
 
@@ -71,4 +70,5 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
+
 /* -------------------------------------------------------------------------- */

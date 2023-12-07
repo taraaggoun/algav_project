@@ -1,5 +1,7 @@
 /* -------------------------------- INCLUDES -------------------------------- */
 
+#include "../include/min_heap_array.h"
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,8 +9,6 @@
 
 #include "./test_utils.h"
 #include "../include/tab_dynamique.h"
-#include "../include/min_heap_array.h"
-
 
 /* -------------------------------- DEFINE --------------------------------- */
 
@@ -29,10 +29,8 @@ void printTas(uint128_t *tas, int taille) {
 	printf("[\n");
 	for(int i = 0 ; i < taille; i++) {
 		printCles(tas[i]);
-		if(i == (taille - 1)) {
-		} else {
+		if(i != (taille - 1))
 			printf(";\n");
-		}
 	}
 	printf("]\n\n");
 }
@@ -58,7 +56,6 @@ int main(int argc, char *argv[]) {
 
 	uint128_t *listesCle_1 = calloc(1, SIZE * sizeof(uint128_t));
 	uint128_t *listesCle_2 = calloc(1, SIZE * sizeof(uint128_t));
-
 
 	printf("-- Création d'une liste de clés %s --\n\n", pathname);
 
@@ -100,52 +97,43 @@ int main(int argc, char *argv[]) {
 	printf("-- Création d'un tas à partir des clés %s --\n\n", pathname);
 
 	table_dynamique tas_1;
-	constTabDyn(&tas_1,CAPACITY);
+	constTabDyn(&tas_1, CAPACITY);
 
-	mharray_ajout_iteratif(listesCle_1,i, &tas_1);
+	mharray_ajout_iteratif(listesCle_1, i, &tas_1);
 
 	printTable(&tas_1);
 
-	if(is_heap(&tas_1)){
-		printf("Tas 1 est un tas\n\n");
-	}else{
-		printf("Tas 1 n'est pas un tas\n\n");
-	}
+	if (is_heap(&tas_1)) printf("Tas 1 est un tas\n\n");
+	else printf("Tas 1 n'est pas un tas\n\n");
 
 	printf("-- Création d'un tas à partir des clés %s --\n\n", pathname_2);
 	table_dynamique tas_2;
-	constTabDyn(&tas_2,CAPACITY);
+	constTabDyn(&tas_2, CAPACITY);
 
-	for(int k = 0 ; k < j; k++){
+	for (int k = 0 ; k < j; k++)
 		addElement(&tas_2,listesCle_2[k]);
-	}
+
 	for (int k = tas_2.size; k < tas_2.capacity; k++) {
 		if (read_uint128(file_2, &cle_2, cle_str_2) == 0)
 			break;
 		addElement(&tas_2, cle_2);
 	}
-
 	mharray_construction(&tas_2);
-
 	printTable(&tas_2);
 
-	if(is_heap(&tas_2)){
-		printf("Tas 2 est un tas\n\n");
-	}else{
-		printf("Tas 2 n'est pas un tas\n\n");
-	}
+	if(is_heap(&tas_2)) printf("Tas 2 est un tas\n\n");
+	else printf("Tas 2 n'est pas un tas\n\n");
 
-	printf("-- Union des tas créer à partir des clés de %s & %s --\n\n", pathname,pathname_2);
+	printf("-- Union des tas créer à partir des clés de %s & %s --\n\n", pathname, pathname_2);
 
-	table_dynamique unionTas = mharray_union(&tas_1,&tas_2);
+	table_dynamique unionTas = mharray_union(&tas_1, &tas_2);
 
 	printTable(&unionTas);
 
-	if(is_heap(&unionTas)){
+	if(is_heap(&unionTas))
 		printf("Tas Union est un tas\n\n");
-	}else{
+	else
 		printf("Tas Union n'est pas un tas\n\n");
-	}
 
 	printf("-- Suppression de la plus petite clé du tas créer à partir des clés %s --\n\n", pathname);
 
@@ -153,12 +141,10 @@ int main(int argc, char *argv[]) {
 
 	printTable(&tas_1);
 
-	if(is_heap(&tas_1)){
+	if(is_heap(&tas_1))
 		printf("Tas mharray_suppr_min est un tas\n\n");
-	}else{
+	else
 		printf("Tas mharray_suppr_min n'est pas un tas\n\n");
-	}
-
 
 	freeTable(&unionTas);
 	freeTable(&tas_2);
@@ -166,6 +152,7 @@ int main(int argc, char *argv[]) {
 
 	free(listesCle_2);
 	free(listesCle_1);
+
 	fclose(file_2);
 	fclose(file);
 

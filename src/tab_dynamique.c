@@ -123,7 +123,6 @@ void printTable(table_dynamique *table) {
 		else
 			printf(";");
 	}
-
 	printf("| Taille : %d\n| Capacité : %d\n\n",table->size,table->capacity);
 }
 
