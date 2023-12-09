@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "../graph/profiler.h"
+
 /* -------------------------------- DEFINES --------------------------------- */
 
 #define BUF_UINT128_LEN_B10 38
@@ -134,17 +136,21 @@ void mharray_ajout(uint128_t cle, table_dynamique *tas) {
 }
 
 void mharray_ajout_iteratif(uint128_t *listeElement, int len, table_dynamique *tas) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	for(int i = 0; i < len; i++)
     		mharray_ajout(listeElement[i], tas);
+	END_PROFILE_FUNCTION(len, cl);
 }
 
 void mharray_construction(table_dynamique *listeElement) {
-	for (int i = listeElement->size / 2 - 1; i >= 0; i--) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
+	for (int i = listeElement->size / 2 - 1; i >= 0; i--)
 	   remonteTas(listeElement, i);
-	}
+	END_PROFILE_FUNCTION(listeElement->size, cl);
 }
 
-table_dynamique mharray_union(table_dynamique * A,table_dynamique * B){
+table_dynamique mharray_union(table_dynamique *A,table_dynamique *B) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	table_dynamique res;
 	constTabDyn(&res, A->size);
 	mharray_ajout_iteratif(A->data, A->size, &res);
@@ -152,6 +158,8 @@ table_dynamique mharray_union(table_dynamique * A,table_dynamique * B){
 		addElement(&res,B->data[i]);
 
 	mharray_construction(&res);
+
+	END_PROFILE_FUNCTION(A->size + B->size, cl);
 
 	return res;
 }

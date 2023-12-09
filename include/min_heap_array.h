@@ -5,6 +5,10 @@
 #include "uint128.h"
 #include "tab_dynamique.h"
 
+/* -------------------------------- DEFINES --------------------------------- */
+
+typedef table_dynamique mharray;
+
 /* -------------------------------- FUNCTIONS ------------------------------- */
 
 /**

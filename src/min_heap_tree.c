@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "../graph/profiler.h"
+
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
 /**
@@ -386,20 +388,30 @@ void mhtree_ajout(uint128_t k, mhtree **h) {
 }
 
 void mhtree_ajout_iteratifs(uint128_t *k, size_t len, mhtree **h) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	for (size_t i = 0; i < len; i++)
 		mhtree_ajout(k[i], h);
+	END_PROFILE_FUNCTION(len, cl);
 }
 
 mhtree* mhtree_construction(uint128_t *v, size_t len) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	if (len == 0)
 		return mhtree_empty();
 
 	mhtree *res = mhtree_construction_rec(v, 0,  len - 1);
 	bt_to_heap(res);
+
+	END_PROFILE_FUNCTION(len, cl);
+
 	return res;
 }
 
-mhtree* mhtree_union(mhtree *h1, mhtree *h2) {
+mhtree* mhtree_union(mhtree *h1, mhtree *h2, int size) {
+	clock_t cl = 0;
+	if (size != -1) // Pour chronometrer pour les graphes
+		cl = BEGIN_PROFILE_FUNCTION();
+
 	if (mhtree_is_empty(h1))
 		return h2;
 	if (mhtree_is_empty(h2))
@@ -413,6 +425,10 @@ mhtree* mhtree_union(mhtree *h1, mhtree *h2) {
 
 	mhtree *res = mhtree_construction(tab, s);
 	free(tab);
+
+	if (size != -1)
+		END_PROFILE_FUNCTION(size, cl); // graphes
+
 	return res;
 }
 

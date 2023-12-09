@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 
 	// Union
 	printf("\nUnion des tas\n");
-	mhtree *mht_union = mhtree_union(mht, mht_cons);
+	mhtree *mht_union = mhtree_union(mht, mht_cons, -1);
 	mhtree_print(mht_union);
 	printf("l'arbre est il un tas? %d \n", is_mhtree(mht_union));
 
