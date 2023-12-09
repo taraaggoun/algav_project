@@ -396,8 +396,10 @@ void mhtree_ajout_iteratifs(uint128_t *k, size_t len, mhtree **h) {
 
 mhtree* mhtree_construction(uint128_t *v, size_t len) {
 	clock_t cl = BEGIN_PROFILE_FUNCTION();
-	if (len == 0)
+	if (len == 0) {
+		END_PROFILE_FUNCTION(len, cl);
 		return mhtree_empty();
+	}
 
 	mhtree *res = mhtree_construction_rec(v, 0,  len - 1);
 	bt_to_heap(res);
@@ -412,10 +414,6 @@ mhtree* mhtree_union(mhtree *h1, mhtree *h2, int size) {
 	if (size != -1) // Pour chronometrer pour les graphes
 		cl = BEGIN_PROFILE_FUNCTION();
 
-	if (mhtree_is_empty(h1))
-		return h2;
-	if (mhtree_is_empty(h2))
-		return h1;
 	size_t s = mhtree_size(h1) + mhtree_size(h2);
 	uint128_t *tab = (uint128_t *) malloc(s * sizeof(uint128_t));
     	int id = 0;

@@ -17,8 +17,8 @@ void begin_session(const char* filename)
 	}
 	int fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY, 0600);
 	if (fd < 0) {
-		// TODO: error handling
-		exit(4);
+		dprintf(STDERR_FILENO, "Erreur open");
+		exit(EXIT_FAILURE);
 	}
 
 	out_fd = fd;
@@ -40,7 +40,8 @@ void write_profile(ProfileResult result)
 	snprintf(writebuf, ASSEZ_GRAND, "%s %lu %f\n", result.name, result.size, time);
 
 	if (write(out_fd, writebuf, strlen(writebuf)) < 0) {
-		// TODO: erro handling
+		dprintf(STDERR_FILENO, "Erreur write");
+		exit(EXIT_FAILURE);
 	}
 }
 

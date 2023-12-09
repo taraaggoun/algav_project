@@ -1,5 +1,3 @@
-
-
 #include "../include/min_heap_tree.h"
 #include "../include/min_heap_array.h"
 #include "../test/test_utils.h"
@@ -28,6 +26,7 @@ void get_keys(const char *filename, uint128_t *keys, size_t size) {
 			break;
 		}
 	}
+	fclose(key_file);
 }
 
 void min_heap_tree_tests(void) {
@@ -47,7 +46,7 @@ void min_heap_tree_tests(void) {
 		mht_addi = NULL;
 		mhtree_free(mht_const);
 		mht_const = NULL;
-		// mhtree_free(mht_union);
+		mhtree_free(mht_union);
 		mht_union = NULL;
 	}
 }

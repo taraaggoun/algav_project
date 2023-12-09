@@ -152,9 +152,10 @@ void mharray_construction(table_dynamique *listeElement) {
 table_dynamique mharray_union(table_dynamique *A,table_dynamique *B) {
 	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	table_dynamique res;
-	constTabDyn(&res, A->size);
-	mharray_ajout_iteratif(A->data, A->size, &res);
-	for(int i = 0; i < B->size;i++)
+	constTabDyn(&res, A->size + B->size);
+	for(int i = 0; i < A->size; i++)
+		addElement(&res, A->data[i]);
+	for(int i = 0; i < B->size; i++)
 		addElement(&res,B->data[i]);
 
 	mharray_construction(&res);
