@@ -53,4 +53,6 @@ void binomh_print(binomh *bh);
 
 binomh* binomK_create(uint128_t* arrayCles, int k);
 
+bool isBinomialHeap(binomh *heap);
+
 /* -------------------------------------------------------------------------- */

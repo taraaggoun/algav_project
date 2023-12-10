@@ -13,7 +13,7 @@
 
 /* -------------------------------- DEFINES --------------------------------- */
 
-#define NB_UINT128 3
+#define NB_UINT128 6
 
 /* ---------------------------------- MAIN ---------------------------------- */
 
@@ -40,8 +40,7 @@ int main(int argc, char *argv[]) {
 
 	//size_t i = pow(2, NB_UINT128);
 
-	uint128_t * tmp = (uint128_t*)malloc(10*sizeof(uint128_t));
-	printf("a\n");
+	uint128_t * tmp = (uint128_t*)malloc(pow(2, NB_UINT128)*sizeof(uint128_t));
 
 	int i = 0;
 
@@ -64,14 +63,19 @@ int main(int argc, char *argv[]) {
 		//bh = NULL;
 		//bh = uni;
 	}*/
-	printf("c\n");
 
 	binomh *uni = binomK_create(tmp,NB_UINT128);
-	printf("d\n");
+
+	binomh_print(uni);
+
+	if(isBinomialHeap(uni)){
+		printf("\nest un tournoi\n");
+	}else{
+		printf("\nn'est pas un tournoi\n");
+	}
 
 	//binomh_print(tmp);
-	binomh_print(uni);
-	printf("e\n");
+
 
 	// print_bst(bst);
 	// printf("L'arbre est un abr ? %d\n", is_bst(bst));
