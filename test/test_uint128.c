@@ -40,7 +40,7 @@ static void affiche_comparaison(uint128_t cle1, uint128_t cle2, int cmp) {
 	}
 
 	if (eg(cle1, cle2)) {
-		comparaison_reussie(cmp, 1, str_comparaison);
+		comparaison_reussie(cmp, 0, str_comparaison);
 		printf("%s = %s : %s\n", cle1_str, cle2_str, str_comparaison);
 		return;
 	}

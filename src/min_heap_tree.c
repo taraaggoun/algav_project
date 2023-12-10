@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "../graph/profiler.h"
+
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
 /**
@@ -77,9 +79,9 @@ static void swap_leave_to_root(mhtree *h) {
 
 	bool parent_is_min;
 	parent_is_min = inf(*(h->parent->key), *(h->key));
-	if(!parent_is_min) {
+	if(!parent_is_min)
 		swap_node_value(h, h->parent);
-	}
+
 	swap_leave_to_root(h->parent);
 }
 
@@ -103,9 +105,9 @@ static void maj_ptr(mhtree_node *new_node) {
 	mhtree_node *cur = new_node;
 	mhtree_node *new_empty = new_node->parent;
 
-	if (new_node->parent->right == NULL) {
+	if (new_node->parent->right == NULL)
 		new_empty = new_node->parent;
-	}
+
 	else {
 		new_empty = new_node->left;
 		while(cur->parent != NULL && cur == cur->parent->right)
@@ -120,7 +122,6 @@ static void maj_ptr(mhtree_node *new_node) {
 			cur = cur->left;
 		new_empty = cur;
 	}
-
 	cur = new_node;
 	while(cur->parent != NULL) {
 		cur->parent->last_leaf = new_node;
@@ -387,24 +388,32 @@ void mhtree_ajout(uint128_t k, mhtree **h) {
 }
 
 void mhtree_ajout_iteratifs(uint128_t *k, size_t len, mhtree **h) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	for (size_t i = 0; i < len; i++)
 		mhtree_ajout(k[i], h);
+	END_PROFILE_FUNCTION(len, cl);
 }
 
 mhtree* mhtree_construction(uint128_t *v, size_t len) {
-	if (len == 0)
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
+	if (len == 0) {
+		END_PROFILE_FUNCTION(len, cl);
 		return mhtree_empty();
+	}
 
 	mhtree *res = mhtree_construction_rec(v, 0,  len - 1);
 	bt_to_heap(res);
+
+	END_PROFILE_FUNCTION(len, cl);
+
 	return res;
 }
 
-mhtree* mhtree_union(mhtree *h1, mhtree *h2) {
-	if (mhtree_is_empty(h1))
-		return h2;
-	if (mhtree_is_empty(h2))
-		return h1;
+mhtree* mhtree_union(mhtree *h1, mhtree *h2, int size) {
+	clock_t cl = 0;
+	if (size != -1) // Pour chronometrer pour les graphes
+		cl = BEGIN_PROFILE_FUNCTION();
+
 	size_t s = mhtree_size(h1) + mhtree_size(h2);
 	uint128_t *tab = (uint128_t *) malloc(s * sizeof(uint128_t));
     	int id = 0;
@@ -414,6 +423,10 @@ mhtree* mhtree_union(mhtree *h1, mhtree *h2) {
 
 	mhtree *res = mhtree_construction(tab, s);
 	free(tab);
+
+	if (size != -1)
+		END_PROFILE_FUNCTION(size, cl); // graphes
+
 	return res;
 }
 

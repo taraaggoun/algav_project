@@ -69,7 +69,7 @@ bool eg(uint128_t cle1, uint128_t cle2) {
 }
 
 void str_to_uint128(char *str, uint128_t *cle) {
-	size_t len = strlen(str);
+	int len = strlen(str);
 	int pos = (len - UINT64_STR_LEN_B16 > 1) ? len - UINT64_STR_LEN_B16 : 2;
 	char buf[UINT64_BUF_LEN_B16] = { 0 };
 
@@ -78,12 +78,13 @@ void str_to_uint128(char *str, uint128_t *cle) {
 	pos = (pos - UINT64_STR_LEN_B16 > 1) ? pos - UINT64_STR_LEN_B16 : 2;
 
 	memset(buf, 0, UINT64_BUF_LEN_B16);
-	snprintf(buf, UINT64_BUF_LEN_B16, "0x%s", str + pos);
+	if (len > (UINT64_BUF_LEN_B16 - 2) / 2) snprintf(buf, UINT64_BUF_LEN_B16, "0x%s", str + pos);
+	else snprintf(buf, UINT64_BUF_LEN_B16, "0x0");
 	cle->high = str_to_uint64(buf);
 }
 
 void uint128_to_str(uint128_t cle, char *str, size_t maxlen) {
-	snprintf(str, maxlen, "%lu.%lu", cle.high, cle.low);
+	snprintf(str, maxlen, "%lu%lu", cle.high, cle.low);
 }
 
 /* -------------------------------------------------------------------------- */

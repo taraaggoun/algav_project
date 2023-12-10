@@ -78,6 +78,6 @@ mhtree* mhtree_construction(uint128_t *v, size_t len);
 /**
  * Fais l'union des deux tas
 */
-mhtree* mhtree_union(mhtree *h1, mhtree *h2);
+mhtree* mhtree_union(mhtree *h1, mhtree *h2, int size);
 
 /* -------------------------------------------------------------------------- */

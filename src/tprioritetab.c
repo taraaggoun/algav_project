@@ -12,18 +12,9 @@
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
-/*
- *  Fonction qui permet de changer de valeur entre elle
- */
-static void interchangerAB(uint128_t *a, uint128_t *b) {
-	uint128_t tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
+/*0x00000000000000000000000000000012
 
-/*
- * Fonction qui supprime la racine du tas et la remplace pas la dernière feuille
- */
+>>>>>>> 2-tas_priorite
 static void supprTete(table_dynamique *tas) {
 	/*La clé la plus petite d'un tas est à la racine, donc on la supprime
 	 *et on la remplace par le dernière clé du tas

@@ -37,7 +37,6 @@ static binomh* copyHeap(binomh *bh, bool b) {
 	*(res->key) = *(bh->key);
 	res->degre = bh->degre;
 	memcpy(res->childs, bh->childs, bh->degre * sizeof(binomh));
-
 	return res;
 }
 

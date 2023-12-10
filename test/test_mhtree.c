@@ -5,7 +5,7 @@
 
 /* -------------------------------- DEFINES --------------------------------- */
 
-#define NB_UINT128 500
+#define NB_UINT128 490
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
@@ -17,8 +17,7 @@ static uint128_t *create_tab(size_t *len, FILE *file) {
 	size_t i = 0;
 	uint128_t cle = { 0 };
 	char cle_str[BUF_UINT128_LEN_B16] = { 0 };
-	// && i < NB_UINT128 pour limité la taille
-	while(read_uint128(file, &cle, cle_str)) {
+	while(read_uint128(file, &cle, cle_str)  && i < NB_UINT128) {
 		tab[i] = cle;
 		i ++;
 		if (i >= *len) 
@@ -91,11 +90,12 @@ int main(int argc, char *argv[]) {
 	uint128_t *tab2 = create_tab(&tab2_len, file);
 	printf("\nConstruction d'un tas a %ld element\n", tab2_len);
 	mhtree *mht_cons = mhtree_construction(tab2, tab2_len);
+	mhtree_print(mht_cons);
 	printf("l'arbre est il un tas? %d \n", is_mhtree(mht_cons));
 
 	// Union
 	printf("\nUnion des tas\n");
-	mhtree *mht_union = mhtree_union(mht, mht_cons);
+	mhtree *mht_union = mhtree_union(mht, mht_cons, -1);
 	mhtree_print(mht_union);
 	printf("l'arbre est il un tas? %d \n", is_mhtree(mht_union));
 
