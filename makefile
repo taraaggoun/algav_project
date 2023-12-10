@@ -32,6 +32,9 @@ $(BIN)/test_md5: $(OBJ)/test_md5.o $(OBJ)/md5.o $(OBJ)/uint128.o $(OBJ)/test_uti
 
 $(BIN)/test_binomh: $(OBJ)/test_binomh.o $(OBJ)/binomial_heap.o  $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^
+	
+$(BIN)/test_binomq: $(OBJ)/test_binomq.o $(OBJ)/binomial_queue.o $(OBJ)/binomial_heap.o  $(OBJ)/uint128.o $(OBJ)/test_utils.o
+	$(CC) -o $@ $^
 
 #--------------------------------------#
 
@@ -52,6 +55,9 @@ $(OBJ)/test_md5.o: test/test_MD5.c
 
 $(OBJ)/test_binomh.o: test/test_binomh.c
 	$(CCO) $@ $<
+	
+$(OBJ)/test_binomq.o: test/test_binomq.c
+	$(CCO) $@ $<
 
 
 $(OBJ)/uint128.o: src/uint128.c
@@ -67,6 +73,9 @@ $(OBJ)/md5.o: src/MD5.c
 	$(CCO) $@ $<
 
 $(OBJ)/binomial_heap.o: src/binomial_heap.c
+	$(CCO) $@ $<
+	
+$(OBJ)/binomial_queue.o: src/binomial_queue.c
 	$(CCO) $@ $<
 
 #--------------------------------------#

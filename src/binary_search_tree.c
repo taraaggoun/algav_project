@@ -32,14 +32,14 @@ static void print_head(int depth, int addr) {
 #define BUF_UINT128_LEN_B10 38
 static void pretty_rec(bst *t, int depth, int addr) {
     if (bst_is_empty(t)) {
-	print_head(depth, addr);
-	printf("|----N\n");
-	return;
+    	print_head(depth, addr);
+    	printf("|----N\n");
+    	return;
     }
     pretty_rec(t->right, depth + 1, 2 * addr + 1);
     print_head(depth, addr);
     char c = (depth == 0) ? '-' : '|';
-     char buf[BUF_UINT128_LEN_B10] = { 0 };
+    char buf[BUF_UINT128_LEN_B10] = { 0 };
     uint128_to_str(*(t->key), buf, BUF_UINT128_LEN_B10);
     printf("%c----%s\n", c, buf);
     pretty_rec(t->left, depth + 1, 2 * addr);

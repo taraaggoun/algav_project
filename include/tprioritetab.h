@@ -3,23 +3,22 @@
 /* -------------------------------- INCLUDE --------------------------------- */
 
 #include "uint128.h"
+#include "tab_dynamique.h"
 
 /* -------------------------------- FUNCTIONS ------------------------------- */
 
-bool estUnTas(uint128_t *tas,int len);
-
-
+bool estUnTas(table_dynamique *tas);
 
 // Supprime le plus petit element du tas
-void supprMin(uint128_t *tas);
+void supprMin(table_dynamique *tas);
 
 // Ajoute au tas avec l'élément
-void ajout(uint128_t element, uint128_t *tas);
+void ajout(uint128_t element, table_dynamique *tas);
 
 // Rajoute au tas les elemennt de la liste
-void ajoutIteratif(uint128_t* listeElement, int len, uint128_t *tas);
+void ajoutIteratif(uint128_t* listeElement,int len,table_dynamique *tas);
 
-void constructionTas(uint128_t *listeElement,int len);
+void constructionTas(table_dynamique *listeElement);
 
-uint128_t* unionAB(uint128_t * A,uint128_t * B,int lenA,int lenB);
+table_dynamique unionAB(table_dynamique * A,table_dynamique * B);
 /* -------------------------------------------------------------------------- */
