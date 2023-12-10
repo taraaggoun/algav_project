@@ -129,9 +129,9 @@ void mharray_ajout(uint128_t cle, table_dynamique *tas) {
 		int parent = (i % 2 == 1) ? (i - 1) / 2 : (i - 2) / 2;
 		if (!inf(tas->data[parent], tas->data[i])) {
 			interchangerAB(&tas->data[i], &tas->data[parent]);
-         	i = parent;
-        } else
-        	break;
+         		i = parent;
+        	} else
+        		break;
 	}
 }
 
