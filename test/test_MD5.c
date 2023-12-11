@@ -17,12 +17,14 @@ int main(int argc, char **argv) {
 	if (argc == 2)
 		snprintf(buf, strlen(argv[1]), "%s", argv[1]);
 	else
-		snprintf(buf, 45, "Et l’unique cordeau des trompettes marinEs");
-	uint128_t *u = MD5(buf);
-	char str[BUF_UINT128_LEN_B16] = { 0 };
-	uint128_to_str(*u, str, BUF_UINT128_LEN_B16);
-	printf("%s \n", str);
-	free(u);
+		snprintf(buf, 45, "Et l’unique cordeau des trompettes marines");
+	uint128_t u = md5(buf);
+	printf("md5(%s) = %lx%lx\n", buf, u.high, u.low);
+
+	snprintf(buf, 45, "Et l’unique cordeau des trompettes marinEs");
+	u = md5(buf);
+	printf("md5(%s) = %lx%lx\n", buf, u.high, u.low);
+
 	return 0;
 }
 

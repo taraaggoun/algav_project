@@ -151,7 +151,7 @@ bool binomq_is_empty(binomq *bq) {
 void binomq_print(binomq *bq) {
 	if(!binomq_is_empty(bq)){
 		printf("File Binomial :\n|Nombre d'éléments : %ld (FB_%ld)\n|Listes des éléments : < ",bq->nb_elem,bq->nb_elem);
-		for(int j = 0 ; j < bq->nb_bh ; j++){
+		for(size_t j = 0 ; j < bq->nb_bh ; j++){
 			printf("TB_%ld",bq->bh[j].degre);
 			if(j == bq->nb_bh -1){
 				printf(" >\n\n<\n\n");
@@ -159,7 +159,7 @@ void binomq_print(binomq *bq) {
 				printf(" ; ");
 			}
 		}
-		for(int i = 0 ; i < bq->nb_bh ; i++){
+		for(size_t i = 0 ; i < bq->nb_bh ; i++){
 			binomh_print(&bq->bh[i]);
 			if(i == bq->nb_bh -1){
 				printf("\n>\n");
@@ -190,7 +190,7 @@ binomh * minDeg(binomq * bq){
 binomq * reste(binomq * bq){
 	binomh * tmp = (binomh*) malloc ((bq -> nb_bh - 1)*sizeof(binomh));
 
-	for(int i = 0 ; i < bq->nb_bh - 1; i++){
+	for(size_t i = 0 ; i < bq->nb_bh - 1; i++){
 		tmp[i]=bq->bh[i];
 	}
 
@@ -206,7 +206,7 @@ binomq * ajoutMin(binomq * bq,binomh *heap){
 	binomq * newBq;
 
 	if(minDeg(bq)->degre > heap->degre){
-		for(int i = 0 ;  i < bq->nb_bh + 1 ; i++){
+		for(size_t i = 0 ;  i < bq->nb_bh + 1 ; i++){
 			if(i == bq->nb_bh){
 				tmpH[i]=*heap;
 			}else{

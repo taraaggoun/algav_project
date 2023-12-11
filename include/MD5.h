@@ -9,6 +9,6 @@
 /**
  * Fonction de hachage classique nommée Message Digest 5
 */
-uint128_t* MD5(char *str);
+uint128_t md5(char *str);
 
 /* -------------------------------------------------------------------------- */

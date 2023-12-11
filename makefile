@@ -6,7 +6,7 @@ CCO 		:= $(CC) $(CCFLAGS) $(INCL) -o
 OBJ		 	:= obj
 BIN 		:= bin
 
-TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_mhtree $(BIN)/test_td $(BIN)/test_mharray $(BIN)/test_bst $(BIN)/test_md5 $(BIN)/graph $(BIN)/test_binomh
+TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_mhtree $(BIN)/test_td $(BIN)/test_mharray $(BIN)/test_binomh $(BIN)/test_binomq $(BIN)/graph $(BIN)/test_md5 $(BIN)/test_bst 
 
 #--------------------------------------#
 
@@ -33,14 +33,17 @@ $(BIN)/test_mharray: $(OBJ)/test_mharray.o $(OBJ)/mharray.o $(OBJ)/tab_dynamique
 $(BIN)/test_binomh: $(OBJ)/test_binomh.o $(OBJ)/binomial_heap.o  $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^
 
-$(BIN)/test_bst: $(OBJ)/test_bst.o $(OBJ)/binary_search_tree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o 
+$(BIN)/test_binomq: $(OBJ)/test_binomq.o $(OBJ)/binomial_queue.o $(OBJ)/binomial_heap.o $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^
+
+$(BIN)/graph: $(OBJ)/graph.o $(OBJ)/mhtree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o $(OBJ)/profiler.o $(OBJ)/mharray.o $(OBJ)/tab_dynamique.o
+	$(CC) -o $@ $^ -lm
 
 $(BIN)/test_md5: $(OBJ)/test_md5.o $(OBJ)/md5.o $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^ -lm
 
-$(BIN)/graph: $(OBJ)/graph.o $(OBJ)/mhtree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o $(OBJ)/profiler.o $(OBJ)/mharray.o $(OBJ)/tab_dynamique.o
-	$(CC) -o $@ $^ -lm
+$(BIN)/test_bst: $(OBJ)/test_bst.o $(OBJ)/binary_search_tree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o 
+	$(CC) -o $@ $^
 
 #--------------------------------------#
 
@@ -62,13 +65,16 @@ $(OBJ)/test_mharray.o: test/test_mharray.c
 $(OBJ)/test_binomh.o: test/test_binomh.c
 	$(CCO) $@ $<
 
-$(OBJ)/test_bst.o: test/test_bst.c
+$(OBJ)/test_binomq.o: test/test_binomq.c
+	$(CCO) $@ $<
+
+$(OBJ)/graph.o: graph/graph.c
 	$(CCO) $@ $<
 
 $(OBJ)/test_md5.o: test/test_MD5.c
 	$(CCO) $@ $<
 
-$(OBJ)/graph.o: graph/graph.c
+$(OBJ)/test_bst.o: test/test_bst.c
 	$(CCO) $@ $<
 
 
@@ -87,13 +93,16 @@ $(OBJ)/mharray.o: src/min_heap_array.c
 $(OBJ)/binomial_heap.o: src/binomial_heap.c
 	$(CCO) $@ $<
 
-$(OBJ)/binary_search_tree.o: src/binary_search_tree.c
+$(OBJ)/binomial_queue.o: src/binomial_queue.c
+	$(CCO) $@ $<
+
+$(OBJ)/profiler.o: graph/profiler.c
 	$(CCO) $@ $<
 
 $(OBJ)/md5.o: src/MD5.c
 	$(CCO) $@ $<
 
-$(OBJ)/profiler.o: graph/profiler.c
+$(OBJ)/binary_search_tree.o: src/binary_search_tree.c
 	$(CCO) $@ $<
 
 #--------------------------------------#

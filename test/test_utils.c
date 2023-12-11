@@ -27,7 +27,7 @@ static int len(char *str) {
 
 void argument_manager(int argc, char *argv[]) {
 	if (argc == 1)
-		strcpy(pathname, "cles_alea/jeu_1_nb_cles_1000.txt");
+		strcpy(pathname, "test/cles_alea/jeu_1_nb_cles_1000.txt");
 
 	if (argc == 2)
 		strcpy(pathname, argv[1]);
