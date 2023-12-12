@@ -1,17 +1,29 @@
-#include <dirent.h>
+/* -------------------------------- INCLUDE --------------------------------- */
+
 #include <fcntl.h>
-#include "../include/binary_search_tree.h"
-#include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include "../include/MD5.h"
+#include <dirent.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+#include "../include/MD5.h"
+#include "../include/binary_search_tree.h"
+
+/* -------------------------------- DEFINE ---------------------------------- */
 
 #define PATHMAX 4096
+
+/* ---------------------------- GLOBAL VARIABLES ---------------------------- */
 
 size_t nb_word_unique = 0;
 size_t nb_word = 0;
 
+/* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
+
+/**
+ * Ajoute un mot a la liste de moi si il est pas deja dedans
+*/
 static void add_list_word(list_words **words, char *word) {
 	nb_word++;
 	if (*words == NULL) {
@@ -55,7 +67,10 @@ static void add_list_word(list_words **words, char *word) {
 	nb_word_unique++;
 }
 
-void print_list_word(list_words *list) {
+/**
+ * Affiche la liste
+*/
+static void print_list_word(list_words *list) {
 	printf("\n---------------------------------------- LISTE DE MOT UNIQUE ----------------------------------------\n");
 	while (list != NULL) {
 		printf("%s ", list->name);
@@ -65,7 +80,10 @@ void print_list_word(list_words *list) {
 	printf("-----------------------------------------------------------------------------------------------------\n");
 }
 
-void print_collision(bst *t) {
+/**
+ * Affiche les colisions
+*/
+static void print_collision(bst *t) {
 	if (t == NULL)
 		return;
 	if (t->left != NULL)
@@ -84,7 +102,10 @@ void print_collision(bst *t) {
 	}
 }
 
-void bst_manager(FILE *f, bst **t, list_words **words) {
+/**
+ * Lis ligne par ligne dans le fichier et ajoute dans les structures
+*/
+static void bst_manager(FILE *f, bst **t, list_words **words) {
 	char buf[129] = { 0 };
 	while(fgets(buf, 128, f) != NULL) {
 		buf[strlen(buf) - 1] = '\0';
@@ -94,14 +115,10 @@ void bst_manager(FILE *f, bst **t, list_words **words) {
 	}
 }
 
-void file_manager() {
-
-}
-
-int main(void) {
-	bst *t = bst_create_empty();
-	list_words *words = NULL;
-
+/**
+ * Ouvres tout les fichiers et lis a l'interieur
+*/
+void file_manager(bst **t, list_words **words) {
 	DIR *dir = opendir("test/Shakespeare");
 	if(dir == NULL) {
    		dprintf(STDERR_FILENO ,"Erreur opendir\n");
@@ -120,9 +137,25 @@ int main(void) {
 			dprintf(STDERR_FILENO ,"Erreur fopen\n");
     			exit(EXIT_FAILURE);
 		}
-		bst_manager(f, &t, &words);
+
+		bst_manager(f, t, words);
+
 		fclose(f);
 	}
+	closedir(dir);
+}
+
+/* ---------------------------------- MAIN ---------------------------------- */
+
+int main(void) {
+	// Creation de l'arbre vide et de la liste vide
+	bst *t = bst_create_empty();
+	list_words *words = NULL;
+	
+	// Lis dans les fichier et ajoute dans les structures
+	file_manager(&t, &words);
+
+	// Affiche les resultats
 	// bst_print(t);
 	print_list_word(words);
 	printf("\nIl y a %ld mots unique sur %ld mots\n", nb_word_unique, nb_word);
@@ -133,3 +166,5 @@ int main(void) {
 
 	return 0;
 }
+
+/* -------------------------------------------------------------------------- */

@@ -12,9 +12,8 @@
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
-/*0x00000000000000000000000000000012
+/*0x00000000000000000000000000000012*/
 
->>>>>>> 2-tas_priorite
 static void supprTete(table_dynamique *tas) {
 	/*La clé la plus petite d'un tas est à la racine, donc on la supprime
 	 *et on la remplace par le dernière clé du tas
