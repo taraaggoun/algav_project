@@ -84,26 +84,24 @@ void print_collision(bst *t) {
 	}
 }
 
-void bst_manager(FILE *f) {
-	bst *t = bst_create_empty();
-	list_words *words = NULL;
+void bst_manager(FILE *f, bst **t, list_words **words) {
 	char buf[129] = { 0 };
 	while(fgets(buf, 128, f) != NULL) {
 		buf[strlen(buf) - 1] = '\0';
 		uint128_t u = md5(buf);
-		bst_add_word(&t, buf, u);
-		add_list_word(&words, buf);
+		bst_add_word(t, buf, u);
+		add_list_word(words, buf);
 	}
-	// bst_print(t);
-	print_list_word(words);
-	printf("\nIl y a %ld mots unique sur %ld mots\n", nb_word_unique, nb_word);
-	printf("\n---------------------------------------- COLLISION ----------------------------------------\n");
-	print_collision(t);
-	printf("-------------------------------------- FIN COLLISION --------------------------------------\n\n");
-	bst_free(t);
+}
+
+void file_manager() {
+
 }
 
 int main(void) {
+	bst *t = bst_create_empty();
+	list_words *words = NULL;
+
 	DIR *dir = opendir("test/Shakespeare");
 	if(dir == NULL) {
    		dprintf(STDERR_FILENO ,"Erreur opendir\n");
@@ -122,8 +120,16 @@ int main(void) {
 			dprintf(STDERR_FILENO ,"Erreur fopen\n");
     			exit(EXIT_FAILURE);
 		}
-		bst_manager(f);
+		bst_manager(f, &t, &words);
 		fclose(f);
 	}
+	// bst_print(t);
+	print_list_word(words);
+	printf("\nIl y a %ld mots unique sur %ld mots\n", nb_word_unique, nb_word);
+	printf("\n---------------------------------------- COLLISION ----------------------------------------\n");
+	print_collision(t);
+	printf("-------------------------------------- FIN COLLISION --------------------------------------\n\n");
+	bst_free(t);
+
 	return 0;
 }

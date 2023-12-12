@@ -165,12 +165,12 @@ binomh* binomh_create(uint128_t k) {
 }
 
 void binomh_free(binomh *bh) {
-	if (bh == NULL)
-		return;
-	for (size_t i = 0; i < bh->degre; i++)
-		binomh_free(&(bh->childs[i]));
-	free(bh->key);
-	free(bh);
+	// if (bh == NULL)
+	// 	return;
+	// for (size_t i = 0; i < bh->degre; i++)
+	// 	binomh_free(&(bh->childs[i]));
+	// free(bh->key);
+	// free(bh);
 }
 
 bool binomh_is_empty(binomh *bh) {
