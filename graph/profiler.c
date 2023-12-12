@@ -39,10 +39,7 @@ void write_profile(ProfileResult result)
 
 	snprintf(writebuf, ASSEZ_GRAND, "%s %lu %f\n", result.name, result.size, time);
 
-	if (write(out_fd, writebuf, strlen(writebuf)) < 0) {
-		dprintf(STDERR_FILENO, "Erreur write");
-		exit(EXIT_FAILURE);
-	}
+	write(out_fd, writebuf, strlen(writebuf));
 }
 
 clock_t begin_profile()

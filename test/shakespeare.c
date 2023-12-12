@@ -125,6 +125,7 @@ void file_manager(bst **t, list_words **words) {
     		exit(EXIT_FAILURE);
 	}
 	struct dirent *entry;
+	int cmp = 0;
 	while((entry = readdir(dir))) {
 		if (entry->d_name[0] == '.')
 			continue;
@@ -137,7 +138,8 @@ void file_manager(bst **t, list_words **words) {
 			dprintf(STDERR_FILENO ,"Erreur fopen\n");
     			exit(EXIT_FAILURE);
 		}
-
+		cmp ++;
+		printf("Lecture du fichier %s     %d/37\n", entry->d_name, cmp);
 		bst_manager(f, t, words);
 
 		fclose(f);
@@ -162,7 +164,9 @@ int main(void) {
 	printf("\n---------------------------------------- COLLISION ----------------------------------------\n");
 	print_collision(t);
 	printf("-------------------------------------- FIN COLLISION --------------------------------------\n\n");
+	// Liberation de la memoire
 	bst_free(t);
+	free_words_list(words, true);
 
 	return 0;
 }
