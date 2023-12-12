@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 /* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
@@ -12,7 +13,7 @@
  * Renvoie si b est une feuille
 */
 static bool is_bst_leaf(bst *t) {
-	return t->left == NULL && t->right == NULL;
+	return t == NULL || (t->left == NULL && t->right == NULL);
 }
 
 /**
@@ -72,8 +73,10 @@ bst* bst_create(uint128_t k, bst *left, bst *right) {
 void bst_free(bst *t) {
 	if (t == NULL)
 		return;
+
 	bst_free(t->left);
 	bst_free(t->right);
+	free_words_list((&t->words), false);
 	free(t->key);
 	free(t);
 }
@@ -140,17 +143,17 @@ bst* bst_supp(bst *t, uint128_t k) {
 	
 	bool egl = eg(*(t->key), k);
 	if (egl && is_bst_leaf(t)) {
-		free(t);
+		bst_free(t);
 		return NULL;
 	}
 	if (egl && bst_is_empty(t->left)) {
 		bst *tmp = t->right;
-		free(t);
+		bst_free(t);
 		return tmp;
 	}
 	if (egl && bst_is_empty(t->right)) {
 		bst *tmp = t->left;
-		free(t);
+		bst_free(t);
 		return tmp;
 	}
 	if (egl) {
@@ -164,10 +167,9 @@ bst* bst_supp(bst *t, uint128_t k) {
 }
 
 bst* bst_search(bst *t, uint128_t k) {
-	if (bst_is_empty(t)) {
-		free(t);
+	if (bst_is_empty(t))
 		return NULL;
-	}
+
 	if (eg(*(t->key), k)) // t->key == k
 		return t;
 
@@ -179,6 +181,55 @@ bst* bst_search(bst *t, uint128_t k) {
 
 void bst_print(bst *t) {
     pretty_rec(t, 0, 0);
+}
+
+void free_words_list(list_words *list, bool b) {
+	if (list == NULL)
+		return;
+	free_words_list(list->next, true);
+	free(list->name);
+	if (b)
+		free(list);
+}
+
+void bst_add_word(bst **t, char *word, uint128_t hash) {
+	bst *tmp = bst_search(*t, hash);
+	if (tmp == NULL) {
+		*t = bst_add(hash, *t);
+		tmp = bst_search(*t, hash);
+	}
+
+	if (tmp->words.name == NULL) {
+        	tmp->words.name = calloc(1, strlen(word) + 1);
+        	if (tmp->words.name == NULL) {
+            		dprintf(STDERR_FILENO, "Erreur calloc add word\n");
+            		exit(EXIT_FAILURE);
+        	}
+        	strncpy(tmp->words.name, word, strlen(word));
+    	} else {
+       		list_words *cur = &(tmp->words);
+        	while (cur->next != NULL) {
+            		if (strcmp(cur->name, word) == 0)
+                		return; // Le mot existe déjà dans la liste
+		        cur = cur->next;
+        	}
+		if (strcmp(cur->name, word) == 0)
+                	return; // Le mot existe déjà dans la liste
+        	// Le mot n'existe pas dans la liste
+        	list_words *w = calloc(1, sizeof(list_words));
+        	if (w == NULL) {
+        		dprintf(STDERR_FILENO, "Erreur calloc add word\n");
+        		exit(EXIT_FAILURE);
+        	}
+	        w->name = calloc(1, strlen(word) + 1); // +1 pour le caractère de fin de chaîne
+        	if (w->name == NULL) {
+            		dprintf(STDERR_FILENO, "Erreur calloc add word\n");
+            		exit(EXIT_FAILURE);
+        	}
+
+        	strncpy(w->name, word, strlen(word));
+        	cur->next = w;
+    	}
 }
 
 /* -------------------------------------------------------------------------- */

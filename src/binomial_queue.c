@@ -27,19 +27,37 @@ int powAK(int a , int k){
  * Renvoie une copy de bh
  * alloue un fils de plus si b == true
 */
-static binomh* copyHeap(binomh *bh, bool b) {
-	binomh *res = binomh_create(*(bh->key));
-	res->childs = calloc(1,sizeof(binomh) * (bh->degre + (b == true)));
-	if (res == NULL) {
-		dprintf(STDERR_FILENO, "Erreur calloc copy childs\n");
-		exit(EXIT_FAILURE);
-	}
-	*(res->key) = *(bh->key);
-	res->degre = bh->degre;
-	memcpy(res->childs, bh->childs, bh->degre * sizeof(binomh));
+static binomh* copyHeap(binomh *bh, bool add_child) {
+    binomh *res = binomh_create_empty();
 
-	return res;
+    // Copy key
+    res->key = malloc(sizeof(uint128_t));
+    if (res->key == NULL) {
+        dprintf(STDERR_FILENO, "Erreur malloc copy key\n");
+        exit(EXIT_FAILURE);
+    }
+    *(res->key) = *(bh->key);
+
+    // Allocate memory for children, considering the possibility of adding one more child
+    res->childs = calloc(bh->degre + (add_child ? 1 : 0), sizeof(binomh));
+
+    if (res->childs == NULL) {
+        dprintf(STDERR_FILENO, "Erreur calloc copy childs\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Copy degree
+    res->degre = bh->degre;
+
+    // Copy child nodes
+    for (size_t i = 0; i < bh->degre; i++) {
+	binomh *tmp = res->childs + i;
+	tmp = copyHeap(&(bh->childs[i]), false);
+    }
+
+    return res;
 }
+
 
 
 /**
@@ -57,13 +75,13 @@ static binomq* copyQueue(binomq *bq) {
 
 static binomq * uFret(binomq * A,binomq * B, binomh * heap){
 	if(binomh_is_empty(heap) == true){
-		printf("*********************binomh_is_empty(heap) == true*****************************\n\n");
+		// printf("*********************binomh_is_empty(heap) == true*****************************\n\n");
 		if(binomq_is_empty(A) == true){
-			printf("*********************binomq_is_empty(A) == true*****************************\n\n");
+			// printf("*********************binomq_is_empty(A) == true*****************************\n\n");
 			return copyQueue(B);
 		}
 		if(binomq_is_empty(B) == true){
-			printf("*********************binomq_is_empty(B) == true*****************************\n\n");
+			// printf("*********************binomq_is_empty(B) == true*****************************\n\n");
 			return copyQueue(A);
 		}
 
@@ -71,23 +89,23 @@ static binomq * uFret(binomq * A,binomq * B, binomh * heap){
 		binomh * T2 = minDeg(B);
 
 		if(T1->degre < T2->degre){
-			printf("*********************T1->degre < T2->degre*****************************\n\n");
+			// printf("*********************T1->degre < T2->degre*****************************\n\n");
 			return ajoutMin(unionQueue(reste(A),B),T1);
 		}else if(T1->degre > T2->degre){
-			printf("*********************T1->degre > T2->degre*****************************\n\n");
+			// printf("*********************T1->degre > T2->degre*****************************\n\n");
 			return ajoutMin(unionQueue(reste(B),A),T2);
 		}else{
-			printf("*********************T1->degre = T2->degre*****************************\n\n");
+			// printf("*********************T1->degre = T2->degre*****************************\n\n");
 			return uFret(reste(A),reste(B),binomh_union(T1,T2));
 		}
 	}else{
-		printf("*********************else*****************************\n\n");
+		// printf("*********************else*****************************\n\n");
 		if(binomq_is_empty(A) == true){
-			printf("*********************binomq_is_empty(A) == true*****************************\n\n");
+			// printf("*********************binomq_is_empty(A) == true*****************************\n\n");
 			return unionQueue(binomq_create(heap,1),B);
 		}
 		if(binomq_is_empty(B) == true){
-			printf("*********************binomq_is_empty(B) == true*****************************\n\n");
+			// printf("*********************binomq_is_empty(B) == true*****************************\n\n");
 			return unionQueue(binomq_create(heap,1),A);;
 		}
 
@@ -95,16 +113,16 @@ static binomq * uFret(binomq * A,binomq * B, binomh * heap){
 		binomh * T2 = minDeg(B);
 
 		if((heap->degre < T1->degre) && ( heap->degre < T2->degre)){
-			printf("*********************(heap->degre < T1->degre) && ( heap->degre < T2->degre)*****************************\n\n");
+			// printf("*********************(heap->degre < T1->degre) && ( heap->degre < T2->degre)*****************************\n\n");
 			return ajoutMin(unionQueue(A,B),heap);
 		}else if((heap->degre == T1->degre) && ( heap->degre == T2->degre)){
-			printf("*********************(heap->degre == T1->degre) && ( heap->degre == T2->degre)*****************************\n\n");
+			// printf("*********************(heap->degre == T1->degre) && ( heap->degre == T2->degre)*****************************\n\n");
 			return ajoutMin(uFret(reste(A),reste(B),binomh_union(T1,T2)),heap);
 		}else if((heap->degre == T1->degre) && ( heap->degre < T2->degre)){
-			printf("*********************(heap->degre == T1->degre) && ( heap->degre < T2->degre)*****************************\n\n");
+			// printf("*********************(heap->degre == T1->degre) && ( heap->degre < T2->degre)*****************************\n\n");
 			return uFret(reste(A),B,binomh_union(T1,heap));
 		}else{
-			printf("*********************(heap->degre < T1->degre) && ( heap->degre == T2->degre)*****************************\n\n");
+			// printf("*********************(heap->degre < T1->degre) && ( heap->degre == T2->degre)*****************************\n\n");
 			return uFret(reste(B),A,binomh_union(T2,heap));
 		}
 	}

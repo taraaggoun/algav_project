@@ -79,12 +79,12 @@ static int powAB(int a , int k){
 	return tmp;
 }
 
-// Affiche une clé à la sortie
-static void print_cle(uint128_t cle) {
-	char cle_tmp[BUF_UINT128_LEN_B10] = { 0 };
-	uint128_to_str(cle, cle_tmp, BUF_UINT128_LEN_B10);
-	printf(" %s ", cle_tmp);
-}
+// // Affiche une clé à la sortie
+// static void print_cle(uint128_t cle) {
+// 	char cle_tmp[BUF_UINT128_LEN_B10] = { 0 };
+// 	uint128_to_str(cle, cle_tmp, BUF_UINT128_LEN_B10);
+// 	printf(" %s ", cle_tmp);
+// }
 
 static bool is_nodeHeap(binomh * node){
 	// printf("\nNode : \n");

@@ -6,7 +6,7 @@ CCO 		:= $(CC) $(CCFLAGS) $(INCL) -o
 OBJ		 	:= obj
 BIN 		:= bin
 
-TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_mhtree $(BIN)/test_td $(BIN)/test_mharray $(BIN)/test_binomh $(BIN)/test_binomq $(BIN)/graph $(BIN)/test_md5 $(BIN)/test_bst 
+TARGETS		:= $(BIN)/test_uint128 $(BIN)/test_mhtree $(BIN)/test_td $(BIN)/test_mharray $(BIN)/test_binomh $(BIN)/test_binomq $(BIN)/graph $(BIN)/test_md5 $(BIN)/test_bst $(BIN)/shakespeare
 
 #--------------------------------------#
 
@@ -45,6 +45,9 @@ $(BIN)/test_md5: $(OBJ)/test_md5.o $(OBJ)/md5.o $(OBJ)/uint128.o $(OBJ)/test_uti
 $(BIN)/test_bst: $(OBJ)/test_bst.o $(OBJ)/binary_search_tree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o 
 	$(CC) -o $@ $^
 
+$(BIN)/shakespeare: $(OBJ)/shakespeare.o $(OBJ)/uint128.o $(OBJ)/binary_search_tree.o $(OBJ)/md5.o
+	$(CC) -o $@ $^ -lm
+
 #--------------------------------------#
 
 $(OBJ)/test_utils.o: test/test_utils.c
@@ -75,6 +78,9 @@ $(OBJ)/test_md5.o: test/test_MD5.c
 	$(CCO) $@ $<
 
 $(OBJ)/test_bst.o: test/test_bst.c
+	$(CCO) $@ $<
+
+$(OBJ)/shakespeare.o: test/shakespeare.c
 	$(CCO) $@ $<
 
 

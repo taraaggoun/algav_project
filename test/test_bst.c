@@ -33,12 +33,20 @@ int main(int argc, char *argv[]) {
 	while( i-- > 0 && read_uint128(file, &cle, cle_str)) {
 		bst = bst_add(cle, bst);
 	}
+	bst_add_word(&bst, "test", cle);
 
 	bst_print(bst);
 	printf("L'arbre est un abr ? %d\n", is_bst(bst));
-	
-	bool exist = bst_search(bst, cle) != NULL;
+
+	struct binary_search_tree *s = bst_search(bst, cle);
+	bool exist = s != NULL;
 	printf("Es ce que %s appartient a l'arbre? %d \n", cle_str, exist);
+	printf("word = %s\n", s->words.name);
+	printf("next is null ? %d\n", s->words.next == NULL);
+	bst_add_word(&bst, "test2", cle);
+	printf("word = %s\n", s->words.name);
+	printf("word = %s\n", s->words.next->name);
+	printf("next is null ? %d\n", s->words.next->next == NULL);
 
 	printf("\nSuppression de %s\n", cle_str);
 	bst = bst_supp(bst, cle);
@@ -47,6 +55,7 @@ int main(int argc, char *argv[]) {
 
 	exist = bst_search(bst, cle) != NULL;
 	printf("Es ce que %s appartient a l'arbre? %d \n", cle_str, exist);
+
 
 	bst_free(bst);
 	fclose(file);

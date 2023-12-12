@@ -6,10 +6,15 @@
 
 /* -------------------------------- STRUCTURE ------------------------------- */
 
+typedef struct list_words {
+	char *name;
+	struct list_words *next;
+} list_words;
 typedef struct binary_search_tree {
 	uint128_t *key;
 	struct binary_search_tree *left;
 	struct binary_search_tree *right;
+	struct list_words words;
 } bst;
 
 /* -------------------------------- FUNCTIONS ------------------------------- */
@@ -70,5 +75,17 @@ bst* bst_search(bst *t, uint128_t k);
  * fonction d'affichage.
 */
 void bst_print (bst *t);
+
+/**
+ * Libere la memoire de la liste de mots si b est vrai
+ * free list
+*/
+void free_words_list(list_words *list, bool b);
+
+/**
+ * Ajoute un mot dans l'arbre t au noeud hash
+ * si hash n'est pas dans l'arbre l'ajoute
+*/
+void bst_add_word(bst **t, char *word, uint128_t hash);
 
 /* -------------------------------------------------------------------------- */
