@@ -33,8 +33,8 @@ $(BIN)/test_mharray: $(OBJ)/test_mharray.o $(OBJ)/mharray.o $(OBJ)/tab_dynamique
 $(BIN)/test_binomh: $(OBJ)/test_binomh.o $(OBJ)/binomial_heap.o  $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^ -lm
 
-$(BIN)/test_binomq: $(OBJ)/test_binomq.o $(OBJ)/binomial_queue.o $(OBJ)/binomial_heap.o $(OBJ)/uint128.o $(OBJ)/test_utils.o
-	$(CC) -o $@ $^
+$(BIN)/test_binomq: $(OBJ)/test_binomq.o $(OBJ)/binomial_queue.o $(OBJ)/binomial_heap.o $(OBJ)/uint128.o $(OBJ)/test_utils.o $(OBJ)/profiler.o
+	$(CC) -o $@ $^ -lm
 
 $(BIN)/graph: $(OBJ)/graph.o $(OBJ)/mhtree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o $(OBJ)/profiler.o $(OBJ)/mharray.o $(OBJ)/tab_dynamique.o
 	$(CC) -o $@ $^ -lm
@@ -45,7 +45,7 @@ $(BIN)/test_md5: $(OBJ)/test_md5.o $(OBJ)/md5.o $(OBJ)/uint128.o $(OBJ)/test_uti
 $(BIN)/test_bst: $(OBJ)/test_bst.o $(OBJ)/binary_search_tree.o $(OBJ)/uint128.o $(OBJ)/test_utils.o 
 	$(CC) -o $@ $^
 
-$(BIN)/shakespeare: $(OBJ)/shakespeare.o $(OBJ)/uint128.o $(OBJ)/binary_search_tree.o $(OBJ)/md5.o
+$(BIN)/shakespeare: $(OBJ)/shakespeare.o $(OBJ)/uint128.o $(OBJ)/binary_search_tree.o $(OBJ)/md5.o $(OBJ)/profiler.o $(OBJ)/mharray.o $(OBJ)/mhtree.o $(OBJ)/binomial_queue.o $(OBJ)/binomial_heap.o $(OBJ)/tab_dynamique.o
 	$(CC) -o $@ $^ -lm
 
 #--------------------------------------#

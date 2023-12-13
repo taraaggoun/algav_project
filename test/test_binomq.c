@@ -78,8 +78,8 @@
 // 			i--;
 // 		}
 
-// 		listeh[n]=*binomK_create(tmp, j);
-// 		listeh2[n++]=*binomK_create(tmp2, j);
+// 		listeh[n]=*binomh_createK(tmp, j);
+// 		listeh2[n++]=*binomh_createK(tmp2, j);
 // 	}
 
 // 	printf("*****************************************Création d'une File binomial BQ*****************************************\n\n");
@@ -113,3 +113,6 @@
 // }
 
 // /* -------------------------------------------------------------------------- */
+int main( ) {
+	return 0;
+}

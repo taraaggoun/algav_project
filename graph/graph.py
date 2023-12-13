@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pylab
 
 def get_dict(filename):
 	data_dict = {}
@@ -68,7 +69,43 @@ def main():
 	plt.show()
 	plt.close()
 
+	print("------------------------------ Shakespeare -----------------------------\n")
+	data_dict = get_dict("graph/ressource/shakespeare")
+	x = [1, 2, 3]
+	y = [data_dict.get("mhtree_suppr_min", [[0, 0]])[0][1], data_dict.get("mharray_suppr_min", [[0, 0]])[0][1], data_dict.get("binomq_suppr_min", [[0, 0]])[0][1]]
+	name = ["mhtree_suppr_min", "mharray_suppr_min", "binomq_suppr_min"]
+	plt.bar(x,y)
+	pylab.xticks(x, name)
+	plt.savefig("graph/ressource/supp_min.png")
+	plt.ylabel("Temps (ms)")
+	plt.title("Suppression Min")
+	plt.show()
+	plt.close()
+
+	get_graph(data_dict, "mhtree_ajout")
+	get_graph(data_dict, "mharray_ajout")
+	get_graph(data_dict, "binomq_ajout")
+	plt.xlabel("Nombres de clés")
+	plt.ylabel("Temps en ms")
+	plt.title("Ajout")
+	plt.legend()
+	plt.savefig("graph/ressource/ajout.png")
+	plt.show()
+	plt.close()
+
+	get_graph(data_dict, "mhtree_construction")
+	get_graph(data_dict, "mharray_construction")
+	get_graph(data_dict, "binomq_construction")
+	plt.xlabel("Nombres de clés")
+	plt.ylabel("Temps en ms")
+	plt.title("Ajout")
+	plt.legend()
+	plt.savefig("graph/ressource/ajout.png")
+	plt.show()
+	plt.close()
+
 	print("--------------------------------------------------------------------------")
+
 
 if __name__ == "__main__":
     main()

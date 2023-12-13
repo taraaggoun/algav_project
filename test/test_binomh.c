@@ -58,24 +58,3 @@ int main(int argc, char *argv[]) {
 }
 
 /* -------------------------------------------------------------------------- */
-
-// int main() {
-// 	binomh *b = binomh_create(5);
-// 	binomh_print(b);
-// 	binomh *b2 = binomh_copy(b, false);
-// 	binomh_print(b2);
-// 	binomh *uni = binomh_union(b, b2);
-// 	binomh_print(uni);
-// 	binomh_free(b);
-// 	binomh_free(b2);
-// 	binomh_free(uni);
-
-// 	size_t k = 3;
-// 	size_t list[] = {1, 5, 8, 3, 2, 7, 6, 4};
-
-// 	binomh *result_heap = binomh_createK(k, list);
-// 	printf("%d\n", isBinomialHeap(result_heap));
-// 	binomh_print(result_heap);
-// 	binomh_free(result_heap);
-// 	return 0;
-// }

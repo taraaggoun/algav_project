@@ -47,6 +47,13 @@ void binomh_print(binomh *bh);
 binomh* binomh_union(binomh *bh1, binomh *bh2);
 
 /**
+ * Renvoie la copie d'un tas binomiale
+ * si more child est vrai alloue de l'espace pour 
+ * un fils de plus
+*/
+binomh* binomh_copy(binomh *bh, bool more_child);
+
+/**
  * Libere la memoire d'un tournois binomiale
 */
 void binomh_free(binomh *bh);

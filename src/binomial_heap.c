@@ -46,30 +46,6 @@ static void pretty_rec(binomh *bh, int depth, int addr) {
 	}
 }
 
-static binomh* binomh_copy(binomh *bh, bool more_child) {
-	binomh *copy = calloc(1, sizeof(binomh));
-	if (copy == NULL) {
-		dprintf(STDERR_FILENO, "Erreur copy binomh\n");
-		exit(EXIT_FAILURE);
-	}
-	copy->key = calloc(1, sizeof(uint128_t));
-	if (copy->key == NULL) {
-		dprintf(STDERR_FILENO, "Erreur copy key\n");
-		exit(EXIT_FAILURE);
-	}
-	*(copy->key) = *(bh->key);
-	copy->degree = bh->degree + (more_child == true);
-	copy->children = calloc(1, sizeof(binomh *) * copy->degree);
-	if (copy->children == NULL) {
-		dprintf(STDERR_FILENO, "Erreur copy children\n");
-		exit(EXIT_FAILURE);
-	}
-	for (size_t i = 0; i < bh->degree; i++)
-        	copy->children[i] = binomh_copy(bh->children[i], false);
-
-	return copy;
-}
-
 static int powAB(int a , int k){
 	int tmp = 1;
 	for(int i = 0 ; i < k ; i++)
@@ -117,11 +93,7 @@ binomh* binomh_create_empty() {
 }
 
 binomh* binomh_create(uint128_t k) {
-	binomh *bh = calloc(1, sizeof(binomh));
-	if (bh == NULL) {
-		dprintf(STDERR_FILENO, "Erreur calloc binomh\n");
-		exit(EXIT_FAILURE);
-	}
+	binomh *bh = binomh_create_empty();
 	bh->key = calloc(1, sizeof(uint128_t));
 	if (bh->key == NULL) {
 		dprintf(STDERR_FILENO, "Erreur calloc key\n");
@@ -137,6 +109,30 @@ bool binomh_is_empty(binomh *bh) {
 
 void binomh_print(binomh *bh) {
     pretty_rec(bh, 0, 0);
+}
+
+binomh* binomh_copy(binomh *bh, bool more_child) {
+	binomh *copy = calloc(1, sizeof(binomh));
+	if (copy == NULL) {
+		dprintf(STDERR_FILENO, "Erreur copy binomh\n");
+		exit(EXIT_FAILURE);
+	}
+	copy->key = calloc(1, sizeof(uint128_t));
+	if (copy->key == NULL) {
+		dprintf(STDERR_FILENO, "Erreur copy key\n");
+		exit(EXIT_FAILURE);
+	}
+	*(copy->key) = *(bh->key);
+	copy->degree = bh->degree + (more_child == true);
+	copy->children = calloc(1, sizeof(binomh *) * copy->degree);
+	if (copy->children == NULL) {
+		dprintf(STDERR_FILENO, "Erreur copy children\n");
+		exit(EXIT_FAILURE);
+	}
+	for (size_t i = 0; i < bh->degree; i++)
+        	copy->children[i] = binomh_copy(bh->children[i], false);
+
+	return copy;
 }
 
 binomh* binomh_union(binomh *bh1, binomh *bh2) {

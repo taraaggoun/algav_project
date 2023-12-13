@@ -105,14 +105,17 @@ bool is_heap(table_dynamique *tas) {
 }
 
 void mharray_suppr_min(table_dynamique *tas) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	supprTete(tas);
 
 	int i = 0;
 
 	remonteTas(tas,i);
+	END_PROFILE_FUNCTION(tas->size, cl);
 }
 
 void mharray_ajout(uint128_t cle, table_dynamique *tas) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	addElement(tas,cle);
 
 	if (tas->size <= 0) {
@@ -126,13 +129,14 @@ void mharray_ajout(uint128_t cle, table_dynamique *tas) {
 	int i = tas->size - 1;
 
 	while (i != 0) {
-		int parent = (i % 2 == 1) ? (i - 1) / 2 : (i - 2) / 2;
-		if (!inf(tas->data[parent], tas->data[i])) {
+		int parent = (i - 1) / 2;
+		if (inf(tas->data[parent], tas->data[i]) == false) {
 			interchangerAB(&tas->data[i], &tas->data[parent]);
          		i = parent;
         	} else
         		break;
 	}
+	END_PROFILE_FUNCTION(tas->size, cl);
 }
 
 void mharray_ajout_iteratif(uint128_t *listeElement, int len, table_dynamique *tas) {

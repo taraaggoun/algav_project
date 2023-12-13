@@ -360,7 +360,8 @@ bool is_mhtree(mhtree *h) {
 	return true;
 }
 
-uint128_t mhtree_suppr_min(mhtree **h) {
+uint128_t mhtree_suppr_min(mhtree **h, size_t size) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	if(mhtree_is_empty(*h)) {
 		dprintf(STDERR_FILENO, "Erreur: Arbre vide dans SupprMin\n");
 		exit(EXIT_FAILURE);
@@ -374,10 +375,12 @@ uint128_t mhtree_suppr_min(mhtree **h) {
 	*((*h)->key) = *((*h)->last_leaf->key);
 	mhtree_remove_node(h);
 	swap_root_to_leave(*h);
+	END_PROFILE_FUNCTION(size, cl);
 	return k;
 }
 
-void mhtree_ajout(uint128_t k, mhtree **h) {
+void mhtree_ajout(uint128_t k, mhtree **h, size_t size) {
+	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	if (mhtree_is_empty(*h)) {
 		free(*h); // On libere la memoire si tas alloué mais vide
 		*h = create_min_heap_leave(k, NULL);
@@ -385,12 +388,14 @@ void mhtree_ajout(uint128_t k, mhtree **h) {
 	}
 	mhtree *new_node = create_min_heap_leave(k, (*h)->empty_leaf_parent);
 	swap_leave_to_root(new_node);
+	END_PROFILE_FUNCTION(size, cl);
+
 }
 
 void mhtree_ajout_iteratifs(uint128_t *k, size_t len, mhtree **h) {
 	clock_t cl = BEGIN_PROFILE_FUNCTION();
 	for (size_t i = 0; i < len; i++)
-		mhtree_ajout(k[i], h);
+		mhtree_ajout(k[i], h, i);
 	END_PROFILE_FUNCTION(len, cl);
 }
 

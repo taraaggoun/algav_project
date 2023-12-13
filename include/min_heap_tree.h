@@ -58,12 +58,12 @@ bool is_mhtree(mhtree *h);
 /**
  * Supprime le min du tas
 */
-uint128_t mhtree_suppr_min(mhtree **h);
+uint128_t mhtree_suppr_min(mhtree **h, size_t size);
 
 /**
  * Ajoute au tas, un element
 */
-void mhtree_ajout(uint128_t k, mhtree **h);
+void mhtree_ajout(uint128_t k, mhtree **h, size_t size);
 
 /**
  * Ajoute au tas, len elements

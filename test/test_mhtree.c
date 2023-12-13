@@ -100,14 +100,14 @@ int main(int argc, char *argv[]) {
 	printf("l'arbre est il un tas? %d \n", is_mhtree(mht_union));
 
 	// Suppression du min
-	uint128_t supp = mhtree_suppr_min(&mht_union);
+	uint128_t supp = mhtree_suppr_min(&mht_union, -1);
 	char supp_str[BUF_UINT128_LEN_B16] = { 0 };
 	uint128_to_str(supp, supp_str, BUF_UINT128_LEN_B10);
 	printf("\nSuppression du min: %s\n", supp_str);
 	mhtree_print(mht_union);
 	printf("l'arbre est il un tas? %d \n", is_mhtree(mht_union));
 
-	supp = mhtree_suppr_min(&mht_union);
+	supp = mhtree_suppr_min(&mht_union, -1);
 	uint128_to_str(supp, supp_str, BUF_UINT128_LEN_B10);
 	printf("\nSuppression du min: %s\n", supp_str);
 	mhtree_print(mht_union);
