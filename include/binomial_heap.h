@@ -15,8 +15,8 @@
 */
 typedef struct binomial_heap {
 	uint128_t *key;
-	size_t degre;
-	struct binomial_heap *childs;
+	size_t degree;
+	struct binomial_heap **children;
 } binomh;
 
 /* -------------------------------- FUNCTIONS ------------------------------- */
@@ -27,14 +27,9 @@ typedef struct binomial_heap {
 binomh* binomh_create_empty();
 
 /**
- * Crée un B1
+ * Crée un B0
 */
 binomh* binomh_create(uint128_t k);
-
-/**
- * Libere la memoire d'un tournois binomiale
-*/
-void binomh_free(binomh *bh);
 
 /**
  * Test si un tournois binomiale est vide
@@ -42,17 +37,28 @@ void binomh_free(binomh *bh);
 bool binomh_is_empty(binomh *bh);
 
 /**
+ * Affiche un tas
+*/
+void binomh_print(binomh *bh);
+
+/**
  * Fais l'union de deux tournois
 */
 binomh* binomh_union(binomh *bh1, binomh *bh2);
 
 /**
- * Affiche un tournois binomiale
+ * Libere la memoire d'un tournois binomiale
 */
-void binomh_print(binomh *bh);
+void binomh_free(binomh *bh);
 
-binomh* binomK_create(uint128_t* arrayCles, int k);
+/**
+ * Cree un tas binomiale Bk a partir d'une liste de cles
+*/
+binomh* binomh_createK(size_t k, uint128_t *list);
 
+/**
+ * Test si c'est un tas binomiale
+*/
 bool isBinomialHeap(binomh *heap);
 
 /* -------------------------------------------------------------------------- */

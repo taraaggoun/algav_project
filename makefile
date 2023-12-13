@@ -31,7 +31,7 @@ $(BIN)/test_mharray: $(OBJ)/test_mharray.o $(OBJ)/mharray.o $(OBJ)/tab_dynamique
 	$(CC) -o $@ $^
 
 $(BIN)/test_binomh: $(OBJ)/test_binomh.o $(OBJ)/binomial_heap.o  $(OBJ)/uint128.o $(OBJ)/test_utils.o
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -lm
 
 $(BIN)/test_binomq: $(OBJ)/test_binomq.o $(OBJ)/binomial_queue.o $(OBJ)/binomial_heap.o $(OBJ)/uint128.o $(OBJ)/test_utils.o
 	$(CC) -o $@ $^

@@ -1,37 +1,15 @@
 /* -------------------------------- INCLUDES -------------------------------- */
 
-#include "../include/uint128.h"
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <stdbool.h>
-
 #include "../include/binomial_heap.h"
 
-/* ---------------------------- PRIVATE FUNCTION ---------------------------- */
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
 
-/**
- * Renvoie une copy de bh
- * alloue un fils de plus si b == true
-*/
-static binomh* copy(binomh *bh, bool b) {
-    binomh *res = binomh_create(*(bh->key));
-    res->childs = calloc(bh->degre + (b == true), sizeof(binomh));
-
-    if (res->childs == NULL) {
-        dprintf(STDERR_FILENO, "Erreur calloc copy\n");
-        exit(EXIT_FAILURE);
-    }
-
-    *(res->key) = *(bh->key);
-    res->degre = bh->degre;
-    memcpy(res->childs, bh->childs, bh->degre * sizeof(binomh));
-
-    return res;
-}
+/* ---------------------------- PRIVATE FUNCTIONS --------------------------- */
 
 /**
  * Fonctions d'affichage
@@ -46,9 +24,7 @@ static void print_head(int depth, int addr) {
     	if (depth == 1)
 		printf ("     ");
 }
-
 #define BUF_UINT128_LEN_B10 38
-
 static void pretty_rec(binomh *bh, int depth, int addr) {
 	if (binomh_is_empty(bh)) {
 		print_head(depth, addr);
@@ -56,88 +32,76 @@ static void pretty_rec(binomh *bh, int depth, int addr) {
 		return;
     	}
 
-	for (size_t i = 0; i < bh->degre/2; i++) {
-    	pretty_rec(&(bh->childs[i]), depth + 1, 2 * addr + i);
+	for (size_t i = 0; i < bh->degree/2; i++) {
+    	pretty_rec(bh->children[i], depth + 1, 2 * addr + i);
 	}
 
 	print_head(depth, addr);
-    char c = (depth == 0) ? '-' : '|';
-    char buf[BUF_UINT128_LEN_B10] = { 0 };
-    uint128_to_str(*(bh->key), buf, BUF_UINT128_LEN_B10);
-    printf("%c----%s\n", c, buf);
-	for (size_t i = bh->degre/2; i < bh->degre; i++) {
-    		pretty_rec(&(bh->childs[i]), depth + 1, 2 * addr + i);
+	char c = (depth == 0) ? '-' : '|';
+	char buf[BUF_UINT128_LEN_B10] = { 0 };
+	uint128_to_str(*(bh->key), buf, BUF_UINT128_LEN_B10);
+    	printf("%c----%s\n", c, buf);
+	for (size_t i = bh->degree/2; i < bh->degree; i++) {
+    		pretty_rec(bh->children[i], depth + 1, 2 * addr + i);
 	}
+}
+
+static binomh* binomh_copy(binomh *bh, bool more_child) {
+	binomh *copy = calloc(1, sizeof(binomh));
+	if (copy == NULL) {
+		dprintf(STDERR_FILENO, "Erreur copy binomh\n");
+		exit(EXIT_FAILURE);
+	}
+	copy->key = calloc(1, sizeof(uint128_t));
+	if (copy->key == NULL) {
+		dprintf(STDERR_FILENO, "Erreur copy key\n");
+		exit(EXIT_FAILURE);
+	}
+	*(copy->key) = *(bh->key);
+	copy->degree = bh->degree + (more_child == true);
+	copy->children = calloc(1, sizeof(binomh *) * copy->degree);
+	if (copy->children == NULL) {
+		dprintf(STDERR_FILENO, "Erreur copy children\n");
+		exit(EXIT_FAILURE);
+	}
+	for (size_t i = 0; i < bh->degree; i++)
+        	copy->children[i] = binomh_copy(bh->children[i], false);
+
+	return copy;
 }
 
 static int powAB(int a , int k){
 	int tmp = 1;
-	for(int i = 0 ; i < k ; i++){
-		tmp *=a;
-	}
-
+	for(int i = 0 ; i < k ; i++)
+		tmp *= a;
 	return tmp;
 }
 
-// // Affiche une clé à la sortie
-// static void print_cle(uint128_t cle) {
-// 	char cle_tmp[BUF_UINT128_LEN_B10] = { 0 };
-// 	uint128_to_str(cle, cle_tmp, BUF_UINT128_LEN_B10);
-// 	printf(" %s ", cle_tmp);
-// }
+static bool is_nodeHeap(binomh *node) {
+	if (node->degree > 0)
+		for (size_t i = 0; i < node->degree - 1 ;i++) {
+			binomh *child_1 = node->children[i];
+			binomh *child_2 = node->children[i+1];
 
-static bool is_nodeHeap(binomh * node){
-	// printf("\nNode : \n");
-	// binomh_print(node);
-	// printf("\nFor(int i = 0 ; i < node->degre -1 ( %ld ) ; i ++ )\n",node->degre - 1);
-	if(node->degre > 0){
-		for(size_t i = 0; i < node->degre -1 ;i++){
-				binomh * child_1 = &node->childs[i];
-				binomh * child_2 = &node->childs[i+1];
-				// printf("\nChild_1 : \n");
-				// binomh_print(child_1);
-				// printf("\nChild_2 : \n");
-				// binomh_print(child_2);
-				// printf("\nIf (node->childs[%ld].degre > node->childs[%ld].degre) : %d\n",i,i+1,(node->childs[i].degre) > (node->childs[i+1].degre));
-				if((child_1->degre) > (child_2->degre)){
-					// printf("\nFalse\n");
-					return false;
-				}
-				// printf("\nNode->key : \n");
-				// print_cle(*(node->key));
-				// printf("\nChild_1->key : \n");
-				// print_cle(*(child_1->key));
-				// printf("\nChild_2->key : \n");
-				// print_cle(*(child_2->key));
-				// printf("\nIf (!inf(*(node->childs[%ld].key),*(node->childs[%ld].key))) : %d\n",i,i+1,inf(*(child_1->key),*(node->key)) && inf(*(child_2->key),*(node->key)));
-				if(inf(*(child_1->key),*(node->key)) && inf(*(child_2->key),*(node->key))){
-					// printf("\nFalse\n");
-					return false;
-				}
-			}
-	}
-
+			if ((child_1->degree) > (child_2->degree))
+				return false;
+			if (inf(*(child_1->key), *(node->key)) && inf(*(child_2->key), *(node->key)))
+				return false;
+		}
 	return true;
 }
 
-static bool is_binomT(binomh * tree){
-	// printf("\nIf tree == Null %d\n",tree == NULL);
-	if (tree == NULL) {
-	        return true; // Un arbre vide est également considéré comme un tournoi binomial
-	}
+static bool is_binomT(binomh * tree) {
+	// Un arbre vide est également considéré comme un tournoi binomial
+	if (tree == NULL)
+	        return true; 
 
-	// printf("\nFor(int i = 0 ; i < tree->degre ( %ld ) ; i ++ )\n",tree->degre);
-	for(size_t i = 0 ; i < tree->degre ; i++){
-		// printf("\nIf (is_nodeHeap(&tree->childs[%ld]))\n",i);
-		if(is_nodeHeap(&tree->childs[i])){
-			// printf("\nReturn is_binomT(&tree->childs[%ld]\n",i);
-			is_binomT(&tree->childs[i]);
-		}else{
-			// printf("\nFalse\n");
+	for (size_t i = 0 ; i < tree->degree ; i++) {
+		if (is_nodeHeap(tree->children[i]))
+			is_binomT(tree->children[i]);
+		else
 			return false;
-		}
 	}
-
 	return true;
 }
 
@@ -153,135 +117,98 @@ binomh* binomh_create_empty() {
 }
 
 binomh* binomh_create(uint128_t k) {
-	binomh *bh = binomh_create_empty();
-	bh->key = calloc(1, sizeof(uint128_t));
-	if (bh->key == NULL) {
-		dprintf(STDERR_FILENO, "Erreur calloc create bh empty");
+	binomh *bh = calloc(1, sizeof(binomh));
+	if (bh == NULL) {
+		dprintf(STDERR_FILENO, "Erreur calloc binomh\n");
 		exit(EXIT_FAILURE);
 	}
-	*(bh->key) = k;
-	bh->degre = 0;
+	bh->key = calloc(1, sizeof(uint128_t));
+	if (bh->key == NULL) {
+		dprintf(STDERR_FILENO, "Erreur calloc key\n");
+		exit(EXIT_FAILURE);
+	}
+	*(bh)->key = k;
 	return bh;
-}
-
-void binomh_free(binomh *bh) {
-	// if (bh == NULL)
-	// 	return;
-	// for (size_t i = 0; i < bh->degre; i++)
-	// 	binomh_free(&(bh->childs[i]));
-	// free(bh->key);
-	// free(bh);
 }
 
 bool binomh_is_empty(binomh *bh) {
 	return bh == NULL || bh->key == NULL;
 }
 
-binomh* binomh_union(binomh *bh1, binomh *bh2) {
-	if (binomh_is_empty(bh1)){
-		return copy(bh2, false);
-	}
-	if (binomh_is_empty(bh2)){
-		return copy(bh1, false);
-	}
-
-	binomh *res;
-	if (inf(*(bh1->key), *(bh2->key)) == true) {
-		res = copy(bh1, true);
-		res->childs[res->degre] = *bh2;
-	}
-	else {
-		res = copy(bh2, true);
-		res->childs[res->degre] = *bh1;
-
-	}
-	res->degre++;
-
-	/*for(int i = 0 ; i< res->degre ; i++){
-		printf("Binomh_union -- Childs :\n");
-		binomh_print(&res->childs[i]);
-		printf("\n");
-	}
-
-	printf("Binomh_union -- res :\n");
-	binomh_print(res);
-	printf("\n");*/
-
-	return res;
+void binomh_print(binomh *bh) {
+    pretty_rec(bh, 0, 0);
 }
 
-binomh* binomK_create(uint128_t* arrayCles, int k){
-	int nb = 0 ;
-	int i = 0;
-
-	bool booltmp = false;
-
-	binomh *uni;
-
-	binomh * tmpArray = (binomh*)malloc(2 * powAB(2,k) * sizeof(binomh));
-	binomh *bh = binomh_create_empty();
-
-	if (tmpArray == NULL) {
-		dprintf(STDERR_FILENO, "Erreur calloc copy childs\n");
-		exit(EXIT_FAILURE);
+binomh* binomh_union(binomh *bh1, binomh *bh2) {
+	binomh *uni = NULL;
+	if (inf(*(bh1->key), *(bh2->key))) {
+		bool bh2_not_empty = !binomh_is_empty(bh2);
+		uni = binomh_copy(bh1, bh2_not_empty);
+		if (bh2_not_empty)
+			uni->children[uni->degree - 1] = binomh_copy(bh2, false);
 	}
-
-
-	 while (i < powAB(2,k)) {
-		 binomh* tmp = binomh_create(arrayCles[i]);
-	     bh = binomh_union(bh, tmp);
-	     uni=bh;
-	     if (nb > 0 ){
-	    	 booltmp=false;
-	    	 //uni=bh;
-	    	 for(int k = nb-1 ; k >= 0 ; k--){
-	    		if (tmpArray[k].degre == uni->degre) {
-	    		 	uni = binomh_union(&tmpArray[k], uni);
-	    		 	booltmp=true;
-	    		 	if(k==0){
-	    		 		tmpArray[k] = *uni;
-	    		 		nb = 1;
-	    		 	}else if(tmpArray[k-1].degre > uni->degre){
-	    		 		tmpArray[k] = *uni;
-	    		 		nb = k+1;
-	    		 	}
-	    		}else{
-	    			if(bh->degre >0 && !booltmp){
-	    				tmpArray[nb++] = *uni;
-	    				bh=binomh_create_empty();
-	    			}else if(booltmp){
-	    				bh=binomh_create_empty();
-	    			}
-	    			break;
-	    		}
-	    	}
-	     }
-	     if(bh->degre >0 && !booltmp){
-	    	 tmpArray[nb++] = *bh;
-	     	 bh=binomh_create_empty();
-	     }else if(booltmp){
-			bh=binomh_create_empty();
-	     }
-	     i++;
-	 }
-	free (tmpArray);
+	else {
+		bool bh1_not_empty = !binomh_is_empty(bh1);
+		uni = binomh_copy(bh2, bh1_not_empty);
+		if (bh1_not_empty)
+			uni->children[uni->degree - 1] = binomh_copy(bh1, false);
+	}
 	return uni;
 }
 
+void binomh_free(binomh *bh) {
+	if (bh == NULL)
+		return;
 
-bool isBinomialHeap(binomh *heap) {
-    if(heap != NULL) {
-        if (!is_binomT(heap)) {
-            return false; // Si l'un des arbres n'est pas un tournoi binomial, retourne faux
-        }
+	for (size_t i = 0; i < bh->degree; i++) {
+		binomh_free(bh->children[i]);
+	}
 
-    }
-
-    return true; // Tous les arbres sont des tournois binomiaux
+	free(bh->key);
+	free(bh->children);
+	free(bh);
 }
 
-void binomh_print(binomh *bh) {
-    pretty_rec(bh, 0, 0);
+binomh* binomh_createK(size_t k, uint128_t *list) {
+	if (list == NULL) {
+        	return NULL;
+    	}
+
+	size_t bh_size = powAB(2, k);
+	binomh **bh_array = calloc(bh_size, sizeof(binomh*));
+
+	for (size_t i = 0; i < bh_size; i++)
+        	bh_array[i] = binomh_create(list[i]);
+
+	while (bh_size > 1) {
+        	size_t new_heap_size = bh_size / 2;
+        	binomh **new_heap_array = calloc(new_heap_size, sizeof(binomh*));
+
+        	for (size_t i = 0; i < new_heap_size; i++) {
+        		if (2 * i + 1 < bh_size)
+	                	new_heap_array[i] = binomh_union(bh_array[2 * i], bh_array[2 * i + 1]);
+        		else
+		                new_heap_array[i] = binomh_copy(bh_array[2 * i], false);
+        	}
+
+		for (size_t i = 0; i < bh_size; i++)
+        		binomh_free(bh_array[i]);
+		free(bh_array);
+	        bh_array = new_heap_array;
+        	bh_size = new_heap_size;
+    	}
+	binomh *result = bh_array[0];
+    	free(bh_array);
+
+    	return result;
+}
+
+bool isBinomialHeap(binomh *heap) {
+	if(heap != NULL)
+		// Si l'un des arbres n'est pas un tournoi binomial, retourne faux
+        	if (!is_binomT(heap))
+            		return false;
+	return true; // Tous les arbres sont des tournois binomiaux
 }
 
 /* -------------------------------------------------------------------------- */

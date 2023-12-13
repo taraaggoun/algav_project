@@ -12,7 +12,7 @@
 
 /* -------------------------------- DEFINE ---------------------------------- */
 
-#define NB_UINT128 2
+#define NB_UINT128 5
 
 /* ---------------------------------- MAIN ---------------------------------- */
 
@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
 	uint128_t cle = { 0 };
 	char cle_str[BUF_UINT128_LEN_B16] = { 0 };
 
+	// Ajoute dans keys 2 puissance nb_uint128 cles
 	while(i < pow(2, NB_UINT128)) {
 		if (read_uint128(file, &cle, cle_str) == 0)
 			break;
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
 		i++;
 	}
 
-	binomh *uni = binomK_create(keys,NB_UINT128);
+	binomh *uni = binomh_createK(NB_UINT128, keys);
 
 	binomh_print(uni);
 	printf("\n");
@@ -48,10 +49,33 @@ int main(int argc, char *argv[]) {
 	else
 		printf("\nn'est pas un tournoi\n");
 
-	free(keys);
+	// Liberation de la memoire
 	binomh_free(uni);
+	free(keys);
 	fclose(file);
+
 	return 0;
 }
 
 /* -------------------------------------------------------------------------- */
+
+// int main() {
+// 	binomh *b = binomh_create(5);
+// 	binomh_print(b);
+// 	binomh *b2 = binomh_copy(b, false);
+// 	binomh_print(b2);
+// 	binomh *uni = binomh_union(b, b2);
+// 	binomh_print(uni);
+// 	binomh_free(b);
+// 	binomh_free(b2);
+// 	binomh_free(uni);
+
+// 	size_t k = 3;
+// 	size_t list[] = {1, 5, 8, 3, 2, 7, 6, 4};
+
+// 	binomh *result_heap = binomh_createK(k, list);
+// 	printf("%d\n", isBinomialHeap(result_heap));
+// 	binomh_print(result_heap);
+// 	binomh_free(result_heap);
+// 	return 0;
+// }
