@@ -19,10 +19,10 @@ du module.
 
 **Auteurs**
 
-|  Name  | First name | Student number |
-|:------:|:----------:|:--------------:|
-| Aggoun |    Tara    |    21304625    |
-| Louis  |    Elise   |    21308054    |
+|  Name  | First name |
+|:------:|:----------:|
+| Aggoun |    Tara    |
+| Louis  |    Elise   |
 
 
 ----------------------------------------------------------------------
